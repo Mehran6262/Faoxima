@@ -1,8 +1,8 @@
 <?php
 
-$dbname     = '';
-$usernamedb = '';
-$passworddb = '';
+$dbname     = 'be28agyjhxybhkcdkfss';
+$usernamedb = 'ujogaarkshw5jg5m';
+$passworddb = 'aJOjHjWtDtR4yuwJLPmo';
 
 
 $connect = null;
@@ -20,7 +20,7 @@ if ($dbname !== '' && $usernamedb !== '') {
         @mysqli_report(MYSQLI_REPORT_OFF);
     }
     try {
-        $connect = @mysqli_connect('localhost', $usernamedb, $passworddb, $dbname);
+        $connect = @mysqli_connect('be28agyjhxybhkcdkfss-mysql.services.clever-cloud.com', $usernamedb, $passworddb, $dbname);
     } catch (\Throwable $rxMysqliConnectError) {
         $connect = null;
         error_log('config.php mysqli_connect failed: ' . $rxMysqliConnectError->getMessage());
@@ -31,7 +31,7 @@ if ($dbname !== '' && $usernamedb !== '') {
         $connect = null;
     }
 
-    $dsn = 'mysql:host=localhost;dbname=' . $dbname . ';charset=utf8mb4';
+    $dsn = 'mysql:host=be28agyjhxybhkcdkfss-mysql.services.clever-cloud.com;dbname=' . $dbname . ';charset=utf8mb4';
     try {
         $pdo = new PDO($dsn, $usernamedb, $passworddb, $options);
     } catch (\PDOException $rxPdoError) {
