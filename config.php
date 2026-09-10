@@ -1,13 +1,13 @@
 <?php
 
-$dbname     = 'be28agyjhxybhkcdkfss';
-$usernamedb = 'ujogaarkshw5jg5m';
-$passworddb = 'aJOjHjWtDtR4yuwJLPmo';
-
+$dbhost     = 'be28agyjhxybhkcdkfss-mysql.services.clever-cloud.com';
+$dbname     = getenv('DB_NAME') ?: 'be28agyjhxybhkcdkfss';
+$usernamedb = getenv('DB_USER') ?: 'ujogaarkshw5jg5m';
+$passworddb = getenv('DB_PASSWORD') ?: ''; 
 
 $connect = null;
 $pdo     = null;
-$dsn = 'mysql:host=be28agyjhxybhkcdkfss-mysql.services.clever-cloud.com;dbname=' . $dbname . ';charset=utf8mb4';
+$dsn     = 'mysql:host=' . $dbhost . ';dbname=' . $dbname . ';charset=utf8mb4';
 $options = [
     PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
     PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
@@ -20,7 +20,7 @@ if ($dbname !== '' && $usernamedb !== '') {
         @mysqli_report(MYSQLI_REPORT_OFF);
     }
     try {
-        $connect = @mysqli_connect('be28agyjhxybhkcdkfss-mysql.services.clever-cloud.com', $usernamedb, $passworddb, $dbname);
+        $connect = @mysqli_connect($dbhost, $usernamedb, $passworddb, $dbname);
     } catch (\Throwable $rxMysqliConnectError) {
         $connect = null;
         error_log('config.php mysqli_connect failed: ' . $rxMysqliConnectError->getMessage());
@@ -31,7 +31,6 @@ if ($dbname !== '' && $usernamedb !== '') {
         $connect = null;
     }
 
-    $dsn = 'mysql:host=be28agyjhxybhkcdkfss-mysql.services.clever-cloud.com;dbname=' . $dbname . ';charset=utf8mb4';
     try {
         $pdo = new PDO($dsn, $usernamedb, $passworddb, $options);
     } catch (\PDOException $rxPdoError) {
@@ -59,11 +58,9 @@ $telegramCurlTimeout        = 10;
 $telegramStrictIpValidation = true;
 $domainhosts                = rtrim(preg_replace('#^https?://#', '', $domainhosts), '/');
 
-
 if (!defined('APP_ORIGIN') && $domainhosts !== '') {
     define('APP_ORIGIN', 'https://' . $domainhosts);
 }
-
 
 $GLOBALS['dbname']                     = $dbname;
 $GLOBALS['usernamedb']                 = $usernamedb;
