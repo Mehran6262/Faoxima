@@ -7,7 +7,7 @@ $passworddb = 'aJOjHjWtDtR4yuwJLPmo';
 
 $connect = null;
 $pdo     = null;
-$dsn     = '';
+$dsn = 'mysql:host=be28agyjhxybhkcdkfss-mysql.services.clever-cloud.com;dbname=' . $dbname . ';charset=utf8mb4';
 $options = [
     PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
     PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
