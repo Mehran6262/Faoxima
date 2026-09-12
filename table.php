@@ -1,4 +1,12 @@
 <?php
+// بررسی کلید امنیتی
+$secret_key = 'M@3722880a';
+
+if (!isset($_GET['key']) || $_GET['key'] !== $secret_key) {
+    http_response_code(403);
+    die('Access Denied: You do not have permission to access this file.');
+}
+
 
 
 @ini_set('display_errors', '0');
