@@ -50,10 +50,11 @@ if ($dbname !== '' && $usernamedb !== '') {
     unset($rxInstallerPending);
 }
 
-$APIKEY                     = '';
-$adminnumber                = '';
-$domainhosts                = '';
-$usernamebot                = '';
+$APIKEY      = getenv('8883033477:AAFiyB_FI5EnJrkLBR0NJbTMczLSrPmpmQ0') ?: '';
+$adminnumber = getenv('133495331') ?: '';
+$domainhosts = getenv('faoxima-1.onrender.com') ?: '';
+$usernamebot = getenv('Robatman1362bot') ?: '';
+
 $telegramCurlTimeout        = 10;
 $telegramStrictIpValidation = true;
 $domainhosts                = rtrim(preg_replace('#^https?://#', '', $domainhosts), '/');
