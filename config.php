@@ -1,13 +1,14 @@
 <?php
 
-$dbhost     = 'be28agyjhxybhkcdkfss-mysql.services.clever-cloud.com';
+$dbhost     = getenv('DB_HOST') ?: 'be28agyjhxybhkcdkfss-mysql.services.clever-cloud.com';
 $dbname     = getenv('DB_NAME') ?: 'be28agyjhxybhkcdkfss';
 $usernamedb = getenv('DB_USER') ?: 'ujogaarkshw5jg5m';
-$passworddb = getenv('DB_PASSWORD') ?: ''; 
+$passworddb = getenv('DB_PASSWORD') ?: '';
+$dbport     = getenv('DB_PORT') ?: 3306;
 
 $connect = null;
 $pdo     = null;
-$dsn     = 'mysql:host=' . $dbhost . ';dbname=' . $dbname . ';charset=utf8mb4';
+$dsn     = 'mysql:host=' . $dbhost . ';port=' . $dbport . ';dbname=' . $dbname . ';charset=utf8mb4';
 $options = [
     PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
     PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
@@ -20,7 +21,7 @@ if ($dbname !== '' && $usernamedb !== '') {
         @mysqli_report(MYSQLI_REPORT_OFF);
     }
     try {
-        $connect = @mysqli_connect($dbhost, $usernamedb, $passworddb, $dbname);
+        $connect = @mysqli_connect($dbhost, $usernamedb, $passworddb, $dbname, (int)$dbport);
     } catch (\Throwable $rxMysqliConnectError) {
         $connect = null;
         error_log('config.php mysqli_connect failed: ' . $rxMysqliConnectError->getMessage());
@@ -37,26 +38,15 @@ if ($dbname !== '' && $usernamedb !== '') {
         $pdo = null;
         error_log('config.php PDO connection failed: ' . $rxPdoError->getMessage());
     }
-} else {
-    $rxInstallerPending = is_file(__DIR__ . DIRECTORY_SEPARATOR . 'installer' . DIRECTORY_SEPARATOR . 'index.php');
-    if (!$rxInstallerPending) {
-        $rxConfigEmptyMarker = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'rx_config_empty.flag';
-        if (!is_file($rxConfigEmptyMarker) || (time() - (int) @filemtime($rxConfigEmptyMarker)) > 3600) {
-            error_log('config.php: database credentials are empty — fill $dbname/$usernamedb/$passworddb to enable DB-backed features.');
-            @touch($rxConfigEmptyMarker);
-        }
-        unset($rxConfigEmptyMarker);
-    }
-    unset($rxInstallerPending);
 }
 
-$APIKEY      = getenv('8883033477:AAFiyB_FI5EnJrkLBR0NJbTMczLSrPmpmQ0') ?: '';
-$adminnumber = getenv('133495331') ?: '';
-$domainhosts = getenv('faoxima-1.onrender.com') ?: '';
-$usernamebot = getenv('Robatman1362bot') ?: '';
+$APIKEY      = getenv('APIKEY') ?: '8883033477:AAFiyB_FI5EnJrkLBR0NJbTMczLSrPmpmQ0';
+$adminnumber = getenv('ADMIN_NUMBER') ?: '133495331';
+$domainhosts = getenv('DOMAIN_HOSTS') ?: 'faoxima-1.onrender.com';
+$usernamebot = getenv('USERNAME_BOT') ?: 'Robatman1362bot';
 
 $telegramCurlTimeout        = 10;
-$telegramStrictIpValidation = true;
+$telegramStrictIpValidation = false;
 $domainhosts                = rtrim(preg_replace('#^https?://#', '', $domainhosts), '/');
 
 if (!defined('APP_ORIGIN') && $domainhosts !== '') {
@@ -77,4 +67,6 @@ $GLOBALS['usernamebot']                = $usernamebot;
 $GLOBALS['telegramCurlTimeout']        = $telegramCurlTimeout;
 $GLOBALS['telegramStrictIpValidation'] = $telegramStrictIpValidation;
 
-require_once __DIR__ . '/proxy.php';
+if (file_exists(__DIR__ . '/proxy.php')) {
+    require_once __DIR__ . '/proxy.php';
+}
