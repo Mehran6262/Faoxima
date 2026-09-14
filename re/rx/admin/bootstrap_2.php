@@ -5749,8 +5749,33 @@ $text_expie_agent
 🔴 محدودیت استفاده: {$giftRow['limituse']}";
     nm_adminInstantReply($from_id, $textgift, $keyboardadmin, 'HTML');
 } elseif ($text == "❌ حذف کد هدیه" && $adminrulecheck['rule'] == "administrator") {
-    nm_adminInstantReply($from_id, "🌐 ساخت و مدیریت کد تخفیف و کد هدیه از طریق ربات غیرفعال شده است.\n\nلطفاً برای ساخت یا مدیریت کدهای تخفیف و هدیه به پنل تحت وب مراجعه کنید.", $shopkeyboard, 'HTML');
-    step('home', $from_id);
+    if (empty($code_Discount)) {
+        nm_adminInstantReply(
+            $from_id,
+            "❌ هیچ کد هدیه‌ای برای حذف وجود ندارد.",
+            $shopkeyboard,
+            'HTML'
+        );
+        step('home', $from_id);
+        return;
+    }
+
+    nm_adminInstantReply(
+        $from_id,
+        "🗑 کد هد\n"
+        که می‌خواهید حذف شود ارسال کنید:\n\n"
+        . implode("\n", array_map(
+            static function ($code) {
+                return "🔹 <code>" . htmlspecialchars((string)$code, ENT_QUOTES, 'UTF-8') . "</code>";
+            },
+            $code_Discount
+        )),
+        $backadmin,
+        'HTML'
+    );
+
+    step('remove-Discount', $from_id);
+
 } elseif ($user['step'] == "remove-Discount") {
     if (!in_array($text, $code_Discount)) {
         nm_adminInstantReply($from_id, $textbotlang['Admin']['Discount']['NotCode'], null, 'HTML');
