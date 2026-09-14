@@ -5738,8 +5738,49 @@ $text_expie_agent
     update("Discount", "price", $text, "code", $user['Processing_value']);
     step('getlimitcodedis', $from_id);
 } elseif ($user['step'] == "getlimitcodedis") {
-    step("home", $from_id);
-    update("Discount", "limituse", $text, "code", $user['Processing_value']);
+    if (!ctype_digit((string)$text) || (int)$text < 1) {
+        nm_adminInstantReply(
+            $from_id,
+            "❌ تعداد استفاده باید یک عدد صحیح بزرگ‌تر از صفر باشد.\n"
+            . "مثال: <code>10</code>",
+            $backadmin,
+            'HTML'
+        );
+        return;
+    }
+
+    $limitUse = (int)$text;
+    $code = (string)$user['Processing_value'];
+
+    update("Discount", "limituse", $limitUse, "code", $code);
+
+    $giftRow = select("Discount", "*", "code", $code, "select");
+
+    if (!is_array($giftRow) || empty($giftRow['code'])) {
+        nm_adminInstantReply(
+            $from_id,
+            "❌ خطا: کد هدیه در دیتابیس پیدا نشد.",
+            $shopkeyboard,
+            'HTML'
+        );
+        step('home', $from_id);
+        return;
+    }
+
+    $textgift =
+        "🎁 کد هدیه شما با موفقیت ساخته شد.\n\n"
+        . "📩 نام کد هدیه: <code>"
+        . htmlspecialchars((string)$giftRow['code'], ENT_QUOTES, 'UTF-8')
+        . "</code>\n"
+        . "💰 مبلغ کد هدیه: "
+        . htmlspecialchars((string)$giftRow['price'], ENT_QUOTES, 'UTF-8')
+        . " تومان\n"
+        . "🔴 محدودیت استفاده: "
+        . htmlspecialchars((string)$giftRow['limituse'], ENT_QUOTES, 'UTF-8');
+
+    nm_adminInstantReply($from_id, $textgift, $keyboardadmin, 'HTML');
+    step('home', $from_id);
+
 
     $giftRow = select("Discount", "*", "code", $user['Processing_value'], "select");
     $textgift = "🎁 کد هدیه شما با موفقیت ساخته شد.
