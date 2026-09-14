@@ -5705,8 +5705,17 @@ $text_expie_agent
     }
     step('home', $from_id);
 } elseif ($text == "🎁 ساخت کد هدیه" && $adminrulecheck['rule'] == "administrator") {
-    nm_adminInstantReply($from_id, "🌐 ساخت و مدیریت کد تخفیف و کد هدیه از طریق ربات غیرفعال شده است.\n\nلطفاً برای ساخت یا مدیریت کدهای تخفیف و هدیه به پنل تحت وب مراجعه کنید.", $shopkeyboard, 'HTML');
-    step('home', $from_id);
+    nm_adminInstantReply(
+        $from_id,
+        "🎁 لطفاً نام کد هدیه را وارد کنید.\n\n"
+        . "کد باید فقط شامل حروف انگلیسی و اعداد باشد.\n"
+        . "مثال: <code>GIFT2026</code>",
+        $backadmin,
+        'HTML'
+    );
+
+    step('get_code', $from_id);
+
 } elseif ($user['step'] == "get_code") {
     if (!preg_match('/^[A-Za-z\d]+$/', $text)) {
         nm_adminInstantReply($from_id, $textbotlang['Admin']['Discount']['ErrorCode'], null, 'HTML');
