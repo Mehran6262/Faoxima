@@ -1,5 +1,9 @@
 <?php
 
+ini_set('log_errors', '1');
+ini_set('error_log', __DIR__ . '/php_error.log');
+error_reporting(E_ALL);
+
 file_put_contents(
     __DIR__ . '/webhook_debug.log',
     date('Y-m-d H:i:s') .
