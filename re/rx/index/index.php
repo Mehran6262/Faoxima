@@ -40,6 +40,39 @@ unset($__rx_parts, $__rx_part, $__rx_path, $__rx_raw);
 
 try {
     file_put_contents(__DIR__ . '/eval_trace.log', date('c') . " | G: before eval\n", FILE_APPEND);
+// === Telegram webhook input bootstrap (BEFORE eval) ===
+$raw = file_get_contents('php://input');
+$update = json_decode($raw, true);
+if (!is_array($update)) $update = [];
+
+$message = $update['message'] ?? null;
+$callback_query = $update['callback_query'] ?? null;
+$chat_member = $update['chat_member'] ?? null;
+
+// Common fields used by legacy bootstrap.php
+$text = $message['text'] ?? '';
+$data = $callback_query['data'] ?? '';
+
+$from_id = $message['from']['id']
+    ?? $callback_query['from']['id']
+    ?? $chat_member['from']['id']
+    ?? 0;
+
+$Chat_type = $message['chat']['type']
+    ?? ($callback_query['message']['chat']['type'] ?? null)
+    ?? ($chat_member['chat']['type'] ?? null);
+
+// optional but commonly used
+$chat_id = $message['chat']['id']
+    ?? ($callback_query['message']['chat']['id'] ?? ($chat_member['chat']['id'] ?? 0));
+
+file_put_contents(
+    __DIR__ . '/eval_trace.log',
+    date('c') . " | INPUT: parsed | from_id={$from_id} | chat_type=" . ($Chat_type ?? 'NULL') .
+    " | text_len=" . strlen((string)$text) . " | data_len=" . strlen((string)$data) . "\n",
+    FILE_APPEND
+);
+// === END input bootstrap ===
 
     eval($__rx_code);
 
