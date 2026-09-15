@@ -1,11 +1,25 @@
 <?php
 
+// === START TRACE LOGGING ===
+if (!function_exists('rx_trace')) {
+    function rx_trace($tag, array $ctx = []) {
+        $ctxStr = '';
+        foreach ($ctx as $k => $v) {
+            $ctxStr .= " $k=" . (is_scalar($v) || $v === null ? var_export($v, true) : gettype($v));
+        }
+        @file_put_contents(__DIR__ . '/bootstrap_trace.log', date('Y-m-d H:i:s') . " | $tag |$ctxStr\n", FILE_APPEND);
+    }
+}
+rx_trace('BOOT_START', ['from_id' => $from_id ?? 'null', 'text' => $text ?? 'null']);
+// === END TRACE LOGGING ===
+
 $version = file_get_contents('version');
 date_default_timezone_set('Asia/Tehran');
 $new_marzban = isset($new_marzban) ? $new_marzban : false;
 ini_set('default_charset', 'UTF-8');
 ini_set('error_log', 'error_log');
 ini_set('memory_limit', '-1');
+
 require_once 'config.php';
 require_once 'botapi.php';
 require_once 'jdf.php';
@@ -14,9 +28,16 @@ require_once 'keyboard.php';
 require_once 'vendor/autoload.php';
 require_once 'panels.php';
 require_once 'infocard.php';
+
+rx_trace('AFTER_REQUIRES');
+
 $textbotlang = languagechange('text.json');
-if ($is_bot)
+
+if ($is_bot) {
+    rx_trace('EXIT_is_bot');
     return;
+}
+
 if (isset($update['chat_member'])) {
     $status = $update['chat_member']['new_chat_member']['status'];
     $from_id = $update['chat_member']['new_chat_member']['user']['id'];
@@ -30,16 +51,26 @@ if (isset($update['chat_member'])) {
     ]);
     if (in_array($status, ['left', 'kicked', 'restricted'])) {
         sendmessage($from_id, $textbotlang['users']['channel']['left_channel'], $keyboard_channel_left, 'html');
+        rx_trace('EXIT_channel_left');
         return;
     }
 }
-if (!in_array($Chat_type, ["private", "supergroup"]))
+
+if (!in_array($Chat_type, ["private", "supergroup"])) {
+    rx_trace('EXIT_chat_type', ['Chat_type' => $Chat_type ?? null]);
     return;
-if (isset($chat_member))
+}
+
+if (isset($chat_member)) {
+    rx_trace('EXIT_chat_member_set');
     return;
+}
+
 $first_name = sanitizeUserName($first_name);
 $setting = select("setting", "*");
+
 if (!is_array($setting)) {
+    rx_trace('EXIT_setting_not_array');
     $rxSettingMissingMarker = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'rx_setting_missing.flag';
     if (!is_file($rxSettingMissingMarker) || (time() - (int) @filemtime($rxSettingMissingMarker)) > 3600) {
         error_log('Settings data is unavailable. Ensure the `setting` table exists and contains records.');
@@ -48,6 +79,9 @@ if (!is_array($setting)) {
     unset($rxSettingMissingMarker);
     return;
 }
+
+rx_trace('AFTER_SETTING_LOADED');
+
 $ManagePanel = new ManagePanel();
 $keyboard_check = json_decode($setting['keyboardmain'], true);
 if (is_array($keyboard_check) && preg_match('/[\x{600}-\x{6FF}\x{FB50}-\x{FDFF}]/u', $keyboard_check['keyboard'][0][0]['text'])) {
@@ -55,14 +89,28 @@ if (is_array($keyboard_check) && preg_match('/[\x{600}-\x{6FF}\x{FB50}-\x{FDFF}]
     update("setting", "keyboardmain", $keyboardmain, null, null);
 }
 
-if (!checktelegramip())
+// چک کردن آی‌پی تلگرام
+if (!checktelegramip()) {
+    rx_trace('EXIT_checktelegramip');
     die("Unauthorized access");
+}
 
-if (intval($from_id) == 0)
+rx_trace('AFTER_IP_CHECK');
+
+if (intval($from_id) == 0) {
+    rx_trace('EXIT_from_id_zero');
     return;
+}
 
 $user = select("user", "*", "id", $from_id, "select", ['cache' => false]);
 $isNewUser = !is_array($user);
+
+rx_trace('AFTER_USER_SELECT', [
+    'from_id'   => $from_id,
+    'isNewUser' => $isNewUser,
+    'step'      => is_array($user) ? ($user['step'] ?? 'none') : 'no_record'
+]);
+
 $otherreport = select("topicid", "idreport", "report", "otherreport", "select")['idreport'];
 $tronadoOldDomain = 'tronseller.storeddownloader.fun';
 $tronadoRecommendedUrl = (defined('TRONADO_ORDER_TOKEN_ENDPOINTS') && isset(TRONADO_ORDER_TOKEN_ENDPOINTS[0]))
