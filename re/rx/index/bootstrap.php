@@ -144,9 +144,6 @@ if (!checktelegramip()) {
 }
 
 rx_trace('AFTER_CHECK_IP');
-
-}
-
 rx_trace('AFTER_IP_CHECK');
 
 if (intval($from_id) == 0) {
@@ -170,6 +167,7 @@ $tronadoRecommendedUrl = (defined('TRONADO_ORDER_TOKEN_ENDPOINTS') && isset(TRON
     : 'https://bot.tronado.cloud/api/v1/Order/GetOrderToken';
 $tronadoWarningFlag = REFACTORED_LEGACY_ROOT . '/urlpaymenttron_warning.flag';
 if (!file_exists($tronadoWarningFlag)) {
+    
     $storedUrl = getPaySettingValue('urlpaymenttron');
     if (is_string($storedUrl) && stripos($storedUrl, $tronadoOldDomain) !== false) {
         $warningText = "⚠️ دامنه قدیمی ترنادو هنوز در تنظیمات استفاده می‌شود. لطفاً آدرس جدید را جایگزین کنید:\n{$tronadoRecommendedUrl}";
