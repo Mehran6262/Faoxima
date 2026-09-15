@@ -1,15 +1,21 @@
 <?php
-// === SELF-SUFFICIENT INPUT DERIVATION ===
+// === تنظیم لاگ‌ها برای خروجی Render ===
+ini_set('display_errors', '0');
+ini_set('log_errors', '1');
+ini_set('error_log', 'php://stderr');
+error_reporting(E_ALL);
+
+// === استخراج ورودی تلگرام ===
 if (!isset($update) || !is_array($update)) {
-    $update = json_decode(file_get_contents('php://input'), true) ?: [];
+    $update = json_decode(file_get_contents('php://input'), true);
 }
 
 if (empty($from_id)) {
     $msg = $update['message'] ?? null;
     $cb  = $update['callback_query'] ?? null;
 
-    $from_id    = $msg['from']['id'] ?? ($cb['from']['id'] ?? ($msg['chat']['id'] ?? 0));
-    $Chat_type  = $msg['chat']['type'] ?? ($cb['message']['chat']['type'] ?? null);
+    $from_id    = $msg['from']['id'] ?? ($cb['from']['id'] ?? 0);
+    $Chat_type  = $msg['chat']['type'] ?? ($cb['message']['chat']['type'] ?? '');
     $text       = $msg['text'] ?? ($cb['data'] ?? '');
     $chat_id    = $msg['chat']['id'] ?? ($cb['message']['chat']['id'] ?? 0);
     $message    = $msg;
@@ -17,27 +23,21 @@ if (empty($from_id)) {
     $username   = $msg['from']['username'] ?? ($cb['from']['username'] ?? '');
 }
 
-rx_trace('AFTER_INPUT_DERIVE', [
-    'from_id'   => $from_id,
-    'Chat_type' => $Chat_type,
-    'text'      => mb_substr((string) ($text ?? ''), 0, 30),
-]);
-// === END INPUT DERIVATION ===
-
-// === START TRACE LOGGING ===
+// تابع لاگ‌گذاری به استریم سرور Render
 if (!function_exists('rx_trace')) {
     function rx_trace($tag, array $ctx = []) {
         $ctxStr = '';
         foreach ($ctx as $k => $v) {
-            $ctxStr .= " $k=" . (is_scalar($v) || $v === null ? var_export($v, true) : gettype($v));
+            $ctxStr .= " $k=" . (is_scalar($v) || $v === null ? var_export($v, true) : json_encode($v));
         }
-        @file_put_contents(__DIR__ . '/bootstrap_trace.log', date('Y-m-d H:i:s') . " | $tag |$ctxStr\n", FILE_APPEND);
+        error_log("TRACE: [$tag]$ctxStr");
     }
 }
+
 rx_trace('BOOT_START', [
     'from_id'   => $from_id ?? 0,
     'Chat_type' => $Chat_type ?? '',
-    'text'      => mb_substr((string) ($text ?? ''), 0, 50),
+    'text'      => mb_substr((string)($text ?? ''), 0, 50)
 ]);
 
 // ردیابی requireها
