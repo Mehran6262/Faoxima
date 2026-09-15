@@ -1,5 +1,16 @@
 <?php
 
+file_put_contents(
+    __DIR__ . '/webhook_debug.log',
+    date('Y-m-d H:i:s') .
+    " | METHOD: " . ($_SERVER['REQUEST_METHOD'] ?? '') .
+    " | URI: " . ($_SERVER['REQUEST_URI'] ?? '') .
+    " | IP: " . ($_SERVER['REMOTE_ADDR'] ?? '') .
+    " | INPUT: " . file_get_contents('php://input') .
+    PHP_EOL,
+    FILE_APPEND
+);
+
 if (!defined('REFACTORED_LEGACY_ROOT')) {
     define('REFACTORED_LEGACY_ROOT', dirname(__DIR__));
 }
