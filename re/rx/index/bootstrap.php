@@ -141,6 +141,7 @@ rx_trace('BEFORE_CHECK_IP');
 if (!checktelegramip()) {
     rx_trace('IP_CHECK_FAILED');
     die("Unauthorized access");
+}
 
 rx_trace('AFTER_CHECK_IP');
 
