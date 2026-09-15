@@ -138,10 +138,10 @@ if (is_array($keyboard_check) && preg_match('/[\x{600}-\x{6FF}\x{FB50}-\x{FDFF}]
 
 // چک کردن آی‌پی تلگرام
 rx_trace('BEFORE_CHECK_IP');
-if (!checktelegramip()) 
+if (!checktelegramip()) {
     rx_trace('IP_CHECK_FAILED');
     die("Unauthorized access");
-}
+
 rx_trace('AFTER_CHECK_IP');
 
 }
