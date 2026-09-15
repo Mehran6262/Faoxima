@@ -5801,11 +5801,19 @@ $text_expie_agent
         return;
     }
 
-    nm_adminInstantReply(
+        nm_adminInstantReply(
         $from_id,
-        "🗑 کد هد\n"
-        که می‌خواهید حذف شود ارسال کنید:\n\n"
+        "🗑 کد هدیه‌ای که می‌خواهید حذف شود را ارسال کنید:\n\n"
         . implode("\n", array_map(
+            static function ($code) {
+                return "🔹 <code>" . htmlspecialchars((string)$code, ENT_QUOTES, 'UTF-8') . "</code>";
+            },
+            $code_Discount
+        )),
+        $backadmin,
+        'HTML'
+    );
+
             static function ($code) {
                 return "🔹 <code>" . htmlspecialchars((string)$code, ENT_QUOTES, 'UTF-8') . "</code>";
             },
