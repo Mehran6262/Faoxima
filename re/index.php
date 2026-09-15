@@ -1,5 +1,7 @@
 <?php
 
+error_log('BOT_TRACE_1_INDEX_STARTED');
+
 file_put_contents(__DIR__ . '/trace.log', "A: start\n", FILE_APPEND);
 
 ini_set('log_errors', '1');
