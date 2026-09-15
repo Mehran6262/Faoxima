@@ -34,15 +34,38 @@ if (!function_exists('rx_trace')) {
         @file_put_contents(__DIR__ . '/bootstrap_trace.log', date('Y-m-d H:i:s') . " | $tag |$ctxStr\n", FILE_APPEND);
     }
 }
-rx_trace('BOOT_START', ['from_id' => $from_id ?? 'null', 'text' => $text ?? 'null']);
-// === END TRACE LOGGING ===
+rx_trace('BOOT_START', [
+    'from_id'   => $from_id ?? 0,
+    'Chat_type' => $Chat_type ?? '',
+    'text'      => mb_substr((string) ($text ?? ''), 0, 50),
+]);
 
-$version = file_get_contents('version');
-date_default_timezone_set('Asia/Tehran');
-$new_marzban = isset($new_marzban) ? $new_marzban : false;
-ini_set('default_charset', 'UTF-8');
-ini_set('error_log', 'error_log');
-ini_set('memory_limit', '-1');
+// ردیابی requireها
+rx_trace('REQ_BEFORE_CONFIG');
+require_once 'config.php';
+
+rx_trace('REQ_BEFORE_BOTAPI');
+require_once 'botapi.php';
+
+rx_trace('REQ_BEFORE_JDF');
+require_once 'jdf.php';
+
+rx_trace('REQ_BEFORE_FUNCTION');
+require_once 'function.php';
+
+rx_trace('REQ_BEFORE_KEYBOARD');
+require_once 'keyboard.php';
+
+rx_trace('REQ_BEFORE_AUTOLOAD');
+if (file_exists('vendor/autoload.php')) {
+    require_once 'vendor/autoload.php';
+}
+
+rx_trace('REQ_BEFORE_PANELS');
+require_once 'panels.php';
+
+rx_trace('AFTER_REQUIRES');
+
 
 require_once 'config.php';
 require_once 'botapi.php';
@@ -114,9 +137,13 @@ if (is_array($keyboard_check) && preg_match('/[\x{600}-\x{6FF}\x{FB50}-\x{FDFF}]
 }
 
 // چک کردن آی‌پی تلگرام
+rx_trace('BEFORE_CHECK_IP');
 if (!checktelegramip()) {
-    rx_trace('EXIT_checktelegramip');
+    rx_trace('IP_CHECK_FAILED');
     die("Unauthorized access");
+}
+rx_trace('AFTER_CHECK_IP');
+
 }
 
 rx_trace('AFTER_IP_CHECK');
