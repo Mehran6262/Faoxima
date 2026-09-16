@@ -2391,7 +2391,7 @@ if ($rxStoredSecret !== '') {
         if (!headers_sent()) {
             http_response_code(200);
         }
-        exit;
+        // exit;
     }
 }
 
