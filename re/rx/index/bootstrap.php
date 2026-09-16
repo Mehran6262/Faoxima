@@ -268,10 +268,10 @@ if (!is_array($admin_ids)) {
     $admin_ids = [];
 }
 
-// لیست آیدی‌های عددی ادمین‌ها (آیدی دوم را در کنار این عدد با گذاشتن, و یک فاصله وارد کنید)
-$my_admin_ids = ['133495331', ];
+// لیست آیدی‌های مدیران اصلی
+$my_admin_ids = ['133495331']; // آیدی‌های دیگر را می‌توانید با ویرگول, وبعد :یک فاصله" در کنار این عدد اضافه کنید
 
-// اضافه کردن آیدی‌ها به لیست ادمین‌ها در صورت عدم وجود
+// ۱. اضافه کردن آیدی به لیست ادمین‌ها
 foreach ($my_admin_ids as $owner_id) {
     if (!in_array($owner_id, $admin_ids)) {
         $admin_ids[] = $owner_id;
@@ -279,10 +279,19 @@ foreach ($my_admin_ids as $owner_id) {
 }
 $admin_ids_str = array_map('strval', $admin_ids);
 
-// فعال‌سازی دسترسی بالاترین سطح مدیریت برای این آیدی‌ها
+// ۲. تنظیم قطعی نقش مدیریت کامل برای شما
 if (isset($from_id) && in_array((string)$from_id, $my_admin_ids, true)) {
-    $adminrulecheck = ['rule' => 'administrator'];
+    $adminrulecheck = [
+        'id_admin' => (string)$from_id,
+        'rule' => 'administrator'
+    ];
+} else {
+    // اگر از دیتابیس خوانده نشده بود
+    if (!isset($adminrulecheck) || !is_array($adminrulecheck)) {
+        $adminrulecheck = select("admin", "*", "id_admin", $from_id ?? 0, "select");
+    }
 }
+
 
 if (
     isset($from_id)
