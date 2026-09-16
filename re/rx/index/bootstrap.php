@@ -278,6 +278,20 @@ foreach ($my_admin_ids as $owner_id) {
     }
 }
 $admin_ids_str = array_map('strval', $admin_ids);
+// --- ADMIN RULE CHECK FIX ---
+$adminrulecheck = ['rule' => 'user'];
+if (isset($from_id) && in_array((string)$from_id, $admin_ids_str, true)) {
+    $ruleRow = select("admin", "*", "id_admin", $from_id, "select");
+    if (is_array($ruleRow)) {
+        $adminrulecheck = $ruleRow;
+    } else {
+        // اگر آیدی شما در جدول ادمین دیتابیس نبود، به صورت پیش‌فرض ادمین اصلی در نظر گرفته شوید
+        if ((string)$from_id === "133495331") {
+            $adminrulecheck = ['id_admin' => (string)$from_id, 'rule' => 'administrator'];
+        }
+    }
+}
+// -----------------------------
 
 // ۲. تنظیم قطعی نقش مدیریت کامل برای شما
 if (isset($from_id) && in_array((string)$from_id, $my_admin_ids, true)) {
