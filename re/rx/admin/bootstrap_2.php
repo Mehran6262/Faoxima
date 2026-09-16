@@ -146,10 +146,12 @@ if ($is_current_user_admin && (in_array($text, (array)($textadmin ?? [])) || $te
 
     if ($datain == "admin")
         deletemessage($from_id, $message_id);
+    /*
     if ($buyreport == "0" || $otherservice == "0" || $otherreport == "0" || $paymentreports == "0" || $reporttest == "0" || $errorreport == "0") {
         nm_adminInstantReply($from_id, $textbotlang['Admin']['activebottext'], $active_panell, 'HTML');
         return;
     }
+    */
     $version_mini_app = file_get_contents('app/version');
     activecron();
     $text_admin = sprintf($text_panel_admin_login_template, $version, $version_mini_app);
