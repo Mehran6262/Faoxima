@@ -141,14 +141,60 @@ if (!function_exists('rx_featCategoryRows')) {
 }
 
 // --- FIX ENTRY TO ADMIN PANEL ---
-$is_current_user_admin = (isset($from_id) && (($adminrulecheck['rule'] ?? '') === 'administrator' || (string)$from_id === "133495331"));
-if ($is_current_user_admin && (in_array($text, (array)($textadmin ?? [])) || $text == "👨‍💼 پنل مدیریت" || $text == "👨‍🔧 بخش ادمین" || $datain == "admin")) {
+// --- کد اصلاح‌شده ---
+// بررسی امن دسترسی ادمین
+$is_current_user_admin = (
+    (isset($from_id) && (string)$from_id === "133495331") ||
+    (isset($adminrulecheck['rule']) && $adminrulecheck['rule'] === 'administrator') ||
+    (isset($admin_ids) && is_array($admin_ids) && in_array((string)$from_id, array_map('strval', $admin_ids), true))
+);
 
-    if ($datain == "admin")
+$is_admin_entry_clicked = (
+    (isset($textadmin) && is_array($textadmin) && in_array($text, $textadmin)) ||
+    $text === "👨‍💼 پنل مدیریت" ||
+    $text === "👨‍🔧 بخش ادمین" ||
+    ($datain ?? '') === "admin"
+);
+
+if ($is_current_user_admin && $is_admin_entry_clicked) {
+    if (($datain ?? '') === "admin") {
         deletemessage($from_id, $message_id);
+    }
+
+    // گیت گزارش‌ها موقتاً غیرفعال شد تا مانع ورود نشود
     /*
-    if ($buyreport == "0" || $otherservice == "0" || $otherreport == "0" || $paymentreports == "0" || $reporttest == "0" || $errorreport == "0") {
-        nm_adminInstantReply($from_id, $textbotlang['Admin']['activebottext'], $active_panell, 'HTML');
+    if (($buyreport ?? "0") == "0" || ($otherservice ?? "0") == "0" || ($otherreport ?? "0") == "0" || ($paymentreports ?? "0") == "0" || ($reporttest ?? "0") == "0" || ($errorreport ?? "0") == "0") {
+        if (isset($textbotlang['Admin']['activebottext'], $active_panell)) {
+            nm_adminInstantReply($from_id, $textbotlang['Admin']['activebottext'], $active_panell, 'HTML');
+        }
+        return;
+    }
+    */
+
+    $version_mini_app = @file_get_contents('app/version') ?: '1.0.0';
+    if (function_exists('activecron')) {
+        activecron();
+    }
+
+    $template = $text_panel_admin_login_template ?? "ورود به پنل مدیریت\nنسخه ربات: %s\nنسخه مینی‌اپ: %s";
+    $text_admin = sprintf($template, ($version ?? '1.0'), $version_mini_app);
+    
+    // ارسال پیام ورود به پنل
+    if (isset($keyboardadmin)) {
+        nm_adminInstantReply($from_id, $text_admin, $keyboardadmin, 'HTML');
+    } else {
+        sendmessage($from_id, $text_admin, null, 'HTML');
+    }
+
+    $miniAppInstructionHidden = isset($user['hide_mini_app_instruction']) ? (string)$user['hide_mini_app_instruction'] : '0';
+    if ($miniAppInstructionHidden !== '1' && !empty($miniAppInstructionText)) {
+        $miniAppInstructionKeyboard = json_encode(['inline_keyboard' => [
+            [ ['text' => 'دیگر نمایش نده ⛓️‍💥', 'callback_data' => 'hide_mini_app_instruction'] ],
+        ]]);
+        nm_adminInstantReply($from_id, $miniAppInstructionText, $miniAppInstructionKeyboard, 'HTML');
+    }
+}
+
         return;
     }
     */
