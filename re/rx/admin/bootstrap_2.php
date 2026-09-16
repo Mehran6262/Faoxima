@@ -140,7 +140,10 @@ if (!function_exists('rx_featCategoryRows')) {
     }
 }
 
-if (in_array($text, $textadmin) || $datain == "admin") {
+// --- FIX ENTRY TO ADMIN PANEL ---
+$is_current_user_admin = (isset($from_id) && (($adminrulecheck['rule'] ?? '') === 'administrator' || (string)$from_id === "133495331"));
+if ($is_current_user_admin && (in_array($text, (array)($textadmin ?? [])) || $text == "👨‍💼 پنل مدیریت" || $text == "👨‍🔧 بخش ادمین" || $datain == "admin")) {
+
     if ($datain == "admin")
         deletemessage($from_id, $message_id);
     if ($buyreport == "0" || $otherservice == "0" || $otherreport == "0" || $paymentreports == "0" || $reporttest == "0" || $errorreport == "0") {
