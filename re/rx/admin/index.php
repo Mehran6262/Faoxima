@@ -31,7 +31,7 @@ if (
     isset($from_id)
     && isset($admin_ids)
     && is_array($admin_ids)
-    && in_array($from_id, $admin_ids, true)
+    && in_array((string)$from_id, array_map('strval', (array)$admin_ids), true)
     && isset($text)
     && is_string($text)
     && $text !== ''
@@ -99,7 +99,7 @@ if (
     isset($from_id)
     && isset($admin_ids)
     && is_array($admin_ids)
-    && in_array($from_id, $admin_ids, true)
+    && in_array((string)$from_id, array_map('strval', (array)$admin_ids), true)
     && isset($text)
     && is_string($text)
     && $text !== ''
