@@ -2373,34 +2373,24 @@ try {
     $rxStoredSecret = '';
 }
 if ($rxStoredSecret !== '') {
-    $rxIncomingSecret = isset($_SERVER['HTTP_X_TELEGRAM_BOT_API_SECRET_TOKEN'])
-        ? (string) $_SERVER['HTTP_X_TELEGRAM_BOT_API_SECRET_TOKEN']
-        : '';
-    if ($rxStoredSecret !== '') {
-    $rxIncomingSecret = isset($_SERVER['HTTP_X_TELEGRAM_BOT_API_SECRET_TOKEN'])
-        ? (string) $_SERVER['HTTP_X_TELEGRAM_BOT_API_SECRET_TOKEN']
-        : '';
+    $rxIncomingSecret = trim((string)($_SERVER['HTTP_X_TELEGRAM_BOT_API_SECRET_TOKEN'] ?? ''));
+    $rxStoredSecret = trim($rxStoredSecret);
 
     if ($rxIncomingSecret !== '' && !hash_equals($rxStoredSecret, $rxIncomingSecret)) {
-        $rxRejectIp = (string) ($_SERVER['REMOTE_ADDR'] ?? 'unknown');
-        $rxRejectIpKey = preg_replace('/[^A-Fa-f0-9.:]/', '_', $rxRejectIp);
-        $rxRejectMarker = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'botapi_reject_' . substr(md5($rxRejectIpKey), 0, 16) . '.flag';
-        $rxShouldLog = true;
-
-        if (is_file($rxRejectMarker) && (time() - (int) @filemtime($rxRejectMarker)) < 3600) {
-            $rxShouldLog = false;
+        $rxRejectMarker = __DIR__ . '/storage/rx_secret_rejected.flag';
+        if (is_file($rxRejectMarker) && !unlink($rxRejectMarker)) {
+            // ignore
         }
-
         if ($rxShouldLog) {
-            error_log('[botapi] Rejected webhook: bad or missing secret_token from ' . $rxRejectIp);
-            @touch($rxRejectMarker);
+            $rxLog('secret_mismatch', [
+                'expected_len' => strlen($rxStoredSecret),
+                'received_len' => strlen($rxIncomingSecret)
+            ]);
         }
-
         if (!headers_sent()) {
             http_response_code(200);
         }
-
-        // exit;
+        exit; // برای رد درخواست‌های نامعتبر
     }
 }
 
