@@ -27,7 +27,7 @@ try {
     );
 
     if ($result === false) {
-        throw new RuntimeException('Database query failed.');
+        throw new RuntimeException('Could not read webhook_secret_token.');
     }
 
     $row = $result->fetch(PDO::FETCH_ASSOC);
@@ -38,46 +38,105 @@ try {
     }
 
     if ($secret === '') {
-        throw new RuntimeException('webhook_secret_token is empty in DB.');
+        throw new RuntimeException('webhook_secret_token is missing in DB.');
     }
 
-    if (!defined('BOT_TOKEN') || BOT_TOKEN === '') {
-        throw new RuntimeException('BOT_TOKEN is not defined after loading index.php.');
+    /*
+     * ساختار احتمالی جدول setting:
+     * - ردیف‌های key/value
+     * - یا ستون‌هایی مانند bot_token / token
+     *
+     * ابتدا ستون‌های جدول را می‌خوانیم و فقط نام ستون‌های مشکوک را نگه می‌داریم.
+     */
+    $columnsQuery = $connection->query(
+        "SELECT column_name
+         FROM information_schema.columns
+         WHERE table_schema = 'public' AND table_name = 'setting'
+         ORDER BY ordinal_position"
+    );
+
+    if ($columnsQuery === false) {
+        throw new RuntimeException('Could not inspect setting table.');
+    }
+
+    $columns = $columnsQuery->fetchAll(PDO::FETCH_COLUMN);
+    $tokenColumn = null;
+
+    foreach ($columns as $column) {
+        $normalized = strtolower((string) $column);
+
+        if (
+            $normalized === 'bot_token' ||
+            $normalized === 'bottoken' ||
+            $normalized === 'telegram_token' ||
+            $normalized === 'telegram_bot_token' ||
+            $normalized === 'token'
+        ) {
+            $tokenColumn = $column;
+            break;
+        }
+    }
+
+    $botToken = '';
+
+    if ($tokenColumn !== null) {
+        // نام ستون از DB خوانده شده و quote شده است.
+        $statement = $connection            'SELECT "' . str_replace('"', '('"', '""', $tokenColumn) .
+            '" FROM setting LIMIT 1'
+        );
+
+        if ($statement !== false) {
+            $tokenRow = $statement->fetch(PDO::FETCH_ASSOC);
+
+            if (is_array($tokenRow) && isset($tokenRow[$tokenColumn])) {
+                $botToken =tokenColumn];
+            }
+        }
+   Column];
+            }
+        }
+    }
+
+    if ($botToken === '') {
+        throw new RuntimeException(
+            'Bot token column not found or empty. Setting columns: ' .
+            implode(', ', $columns)
+        );
     }
 
     $webhookUrl = 'https://faoxima-1.onrender.com/index.php';
 
-    $params = [
-        'url' => $webhookUrl,
-        'secret_token' => $secret,
-        'drop_pending_updates' => 'false',
-    ];
-
-    $apiUrl = 'https://api.telegram.org/bot' . BOT_TOKEN
-        . '/setWebhook?' . http_build_query($params);
+    $apiUrl = 'https://api.telegram.org/bot' . $botToken . '/setWebhook?' .
+        http_build_query([
+            'url' => $webhookUrl,
+            'secret_token' => $secret,
+            'drop_pending_updates' => 'false',
+        ]);
 
     $response = @file_get_contents($apiUrl);
 
     if ($response === false) {
-        $lastError = error_get_last();
-        $message = is_array($lastError) && isset($lastError['message'])
-            ? $lastError['message']
-            : 'unknown error';
-
-        throw new RuntimeException('Telegram API request failed: ' . $message);
+        $error = error_get_last();
+        throw new RuntimeException(
+            'Telegram API request failed: ' .
+            (is_array($error) && isset($error['message'])
+                ? $error['message']
+                : 'unknown error')
+        );
     }
 
-    $decoded = json_decode($response, true);
+    $telegram = json_decode($response, true);
 
-    if (!is_array($decoded)) {
+    if (!is_array($telegram)) {
         throw new RuntimeException('Telegram returned invalid JSON.');
     }
 
     echo json_encode([
-        'status' => !empty($decoded['ok']) ? 'success' : 'error',
-        'telegram_ok' => $decoded['ok'] ?? null,
-        'telegram_description' => $decoded['description'] ?? null,
+        'status' => !empty($telegram['ok']) ? 'success' : 'error',
+        'telegram_ok' => $telegram['ok'] ?? null,
+        'telegram_description' => $telegram['description'] ?? null,
         'webhook_url_set' => $webhookUrl,
+        'token_source_column' => $tokenColumn,
     ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
 
 } catch (Throwable $e) {
