@@ -214,7 +214,7 @@ if ($is_current_user_admin && $is_admin_entry_clicked) {
         nm_adminInstantReply($from_id, $miniAppInstructionText, $miniAppInstructionKeyboard, 'HTML');
     }
 } elseif ($text == $textbotlang['Admin']['backadmin']) {
-    if ($buyreport == "0" || $otherservice == "0" || $otherreport == "0" || $paymentreports == "0" || $reporttest == "0" || $errorreport == "0") {
+    if ($buyreport ?? '1') == "0" || $otherservice == "0" || $otherreport == "0" || $paymentreports == "0" || $reporttest == "0" || $errorreport == "0") {
         nm_adminInstantReply($from_id, $textbotlang['Admin']['activebottext'], $active_panell, 'HTML');
         return;
     }
@@ -250,7 +250,7 @@ if ($is_current_user_admin && $is_admin_entry_clicked) {
     nm_adminInstantReply($from_id, "📦 بازگشت به منوی انبارداری", $stockKb, 'HTML');
     return;
 } elseif (($text == $textbotlang['Admin']['backmenu']) || ((isset($datain) ? (string)$datain : '') === 'backmenu')) {
-    if ($buyreport == "0" || $otherservice == "0" || $otherreport == "0" || $paymentreports == "0" || $reporttest == "0" || $errorreport == "0") {
+    if ($buyreport ?? '1') == "0" || $otherservice == "0" || $otherreport == "0" || $paymentreports == "0" || $reporttest == "0" || $errorreport == "0") {
         nm_adminInstantReply($from_id, $textbotlang['Admin']['activebottext'], $setting_panel, 'HTML');
         return;
     }
