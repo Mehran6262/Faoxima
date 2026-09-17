@@ -41,13 +41,6 @@ try {
         throw new RuntimeException('webhook_secret_token is missing in DB.');
     }
 
-    /*
-     * ساختار احتمالی جدول setting:
-     * - ردیف‌های key/value
-     * - یا ستون‌هایی مانند bot_token / token
-     *
-     * ابتدا ستون‌های جدول را می‌خوانیم و فقط نام ستون‌های مشکوک را نگه می‌داریم.
-     */
     $columnsQuery = $connection->query(
         "SELECT column_name
          FROM information_schema.columns
@@ -80,19 +73,14 @@ try {
     $botToken = '';
 
     if ($tokenColumn !== null) {
-        // نام ستون از DB خوانده شده و quote شده است.
-        $statement = $connection            'SELECT "' . str_replace('"', '('"', '""', $tokenColumn) .
-            '" FROM setting LIMIT 1'
-        );
+        $quotedColumn = '"' . str_replace('"', '""', $tokenColumn) . '"';
+        $statement = $connection->query('SELECT ' . $quotedColumn . ' FROM setting LIMIT 1');
 
         if ($statement !== false) {
             $tokenRow = $statement->fetch(PDO::FETCH_ASSOC);
 
             if (is_array($tokenRow) && isset($tokenRow[$tokenColumn])) {
-                $botToken =tokenColumn];
-            }
-        }
-   Column];
+                $botToken = (string) $tokenRow[$tokenColumn];
             }
         }
     }
