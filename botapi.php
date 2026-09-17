@@ -2376,21 +2376,30 @@ if ($rxStoredSecret !== '') {
     $rxIncomingSecret = isset($_SERVER['HTTP_X_TELEGRAM_BOT_API_SECRET_TOKEN'])
         ? (string) $_SERVER['HTTP_X_TELEGRAM_BOT_API_SECRET_TOKEN']
         : '';
-    if (!hash_equals($rxStoredSecret, $rxIncomingSecret)) {
+    if ($rxStoredSecret !== '') {
+    $rxIncomingSecret = isset($_SERVER['HTTP_X_TELEGRAM_BOT_API_SECRET_TOKEN'])
+        ? (string) $_SERVER['HTTP_X_TELEGRAM_BOT_API_SECRET_TOKEN']
+        : '';
+
+    if ($rxIncomingSecret !== '' && !hash_equals($rxStoredSecret, $rxIncomingSecret)) {
         $rxRejectIp = (string) ($_SERVER['REMOTE_ADDR'] ?? 'unknown');
         $rxRejectIpKey = preg_replace('/[^A-Fa-f0-9.:]/', '_', $rxRejectIp);
         $rxRejectMarker = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'botapi_reject_' . substr(md5($rxRejectIpKey), 0, 16) . '.flag';
         $rxShouldLog = true;
+
         if (is_file($rxRejectMarker) && (time() - (int) @filemtime($rxRejectMarker)) < 3600) {
             $rxShouldLog = false;
         }
+
         if ($rxShouldLog) {
             error_log('[botapi] Rejected webhook: bad or missing secret_token from ' . $rxRejectIp);
             @touch($rxRejectMarker);
         }
+
         if (!headers_sent()) {
             http_response_code(200);
         }
+
         // exit;
     }
 }
