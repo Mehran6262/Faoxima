@@ -42,6 +42,8 @@ if ($dbname !== '' && $usernamedb !== '') {
 
 $APIKEY      = getenv('APIKEY') ?: '8883033477:AAFiyB_FI5EnJrkLBR0NJbTMczLSrPmpmQ0';
 $adminnumber = getenv('ADMIN_NUMBER') ?: '133495331';
+$admin_ids = [$adminnumber];
+$GLOBALS['admin_ids'] = $admin_ids;
 $domainhosts = getenv('DOMAIN_HOSTS') ?: 'faoxima-1.onrender.com';
 $usernamebot = getenv('USERNAME_BOT') ?: 'Robatman1362bot';
 
