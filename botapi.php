@@ -1967,7 +1967,10 @@ if (!function_exists('rx_mergeKeyboardSectionDefaults')) {
     }
 }
 
-function sendmessage($chat_id,$text,$keyboard,$parse_mode,$bot_token = null){
+function sendmessage($chat_id, $text, $keyboard = null, $parse_mode = null, $bot_token = null) {
+    // خط زیر را اضافه کنید:
+    @file_put_contents(__DIR__ . '/send_debug.log', date('c') . " | To: $chat_id | Text: " . substr($text, 0, 50) . "\n", FILE_APPEND);
+
     if(intval($chat_id) == 0)return ['ok' => false];
     $text = applyPremiumEmojiTransform($text, $parse_mode);
     $keyboard = processKeyboardStyles($keyboard);
