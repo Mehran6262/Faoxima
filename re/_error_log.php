@@ -10,7 +10,7 @@ if (!is_dir(REFACTORED_LOG_DIR)) {
 }
 ini_set('log_errors', '1');
 ini_set('display_errors', '0');
-ini_set('error_log', REFACTORED_LOG_DIR . DIRECTORY_SEPARATOR . 'php-error.log');
+ini_set('error_log', 'php://stderr');
 
 
 error_reporting(E_ERROR | E_PARSE | E_CORE_ERROR | E_COMPILE_ERROR | E_USER_ERROR | E_RECOVERABLE_ERROR);
