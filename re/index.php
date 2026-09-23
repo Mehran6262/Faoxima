@@ -25,10 +25,40 @@ if (is_file(__DIR__ . '/_error_log.php')) {
 
 // بررسی وجود و اجرای فایل مرحله بعد
 $targetFile = __DIR__ . '/rx/index/index.php';
+
 if (is_file($targetFile)) {
-    error_log('>>> [4] Found ' . $targetFile . ' -> Requiring now...');
-    require_once $targetFile;
-    error_log('>>> [5] Finished executing rx/index/index.php successfully');
+    try {
+        error_log(
+            "[RX-DIAG] BEFORE require: " . $targetFile . "\n",
+            3,
+            'php://stderr'
+        );
+
+        require_once $targetFile;
+
+        error_log(
+            "[RX-DIAG] AFTER require: completed successfully\n",
+            3,
+            'php://stderr'
+        );
+    } catch (\Throwable $e) {
+        error_log(
+            "[RX-DIAG] "
+            . get_class($e) . ": "
+            . $e->getMessage()
+            . " | FILE: " . $e->getFile()
+            . " | LINE: " . $e->getLine()
+            . "\n",
+            3,
+            'php://stderr'
+        );
+
+        throw $e;
+    }
 } else {
-    error_log('>>> [CRITICAL ERROR] File not found: ' . $targetFile);
+    error_log(
+        "[RX-DIAG] FILE NOT FOUND: " . $targetFile . "\n",
+        3,
+        'php://stderr'
+    );
 }
