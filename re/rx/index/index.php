@@ -42,7 +42,7 @@ try {
     file_put_contents(__DIR__ . '/eval_trace.log', date('c') . " | G: before eval\n", FILE_APPEND);
 
     // === Telegram webhook input bootstrap (BEFORE eval) ===
-    $raw = file_get_contents('php://input');
+    $raw = $GLOBALS['WEBHOOK_RAW_BODY'] ?? file_get_contents('php://input');
     $update = json_decode($raw, true);
     if (!is_array($update)) $update = [];
 
