@@ -191,13 +191,8 @@ if ($is_current_user_admin && $is_admin_entry_clicked) {
         $miniAppInstructionKeyboard = json_encode(['inline_keyboard' => [
             [ ['text' => 'دیگر نمایش نده ⛓️‍💥', 'callback_data' => 'hide_mini_app_instruction'] ],
         ]]);
-        nm_adminInstantReply($from_id, $miniAppInstructionText, $miniAppInstructionKeyboard, 'HTML');
-    }
-}
-
-        return;
-    }
-    */
+    nm_adminInstantReply($from_id, $miniAppInstructionText, $miniAppInstructionKeyboard, 'HTML');
+    
     $version_mini_app = file_get_contents('app/version');
     activecron();
     $text_admin = sprintf($text_panel_admin_login_template, $version, $version_mini_app);
