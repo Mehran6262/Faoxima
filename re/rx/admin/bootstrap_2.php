@@ -171,7 +171,7 @@ if ($is_current_user_admin && $is_admin_entry_clicked) {
     }
     */
 
-    $version_mini_app = @file_get_contents('app/version') ?: '1.0.0';
+        $version_mini_app = @file_get_contents('app/version') ?: '1.0.0';
     if (function_exists('activecron')) {
         activecron();
     }
@@ -191,21 +191,6 @@ if ($is_current_user_admin && $is_admin_entry_clicked) {
         $miniAppInstructionKeyboard = json_encode(['inline_keyboard' => [
             [ ['text' => 'دیگر نمایش نده ⛓️‍💥', 'callback_data' => 'hide_mini_app_instruction'] ],
         ]]);
-    nm_adminInstantReply($from_id, $miniAppInstructionText, $miniAppInstructionKeyboard, 'HTML');
-    
-    $version_mini_app = file_get_contents('app/version');
-    activecron();
-    $text_admin = sprintf($text_panel_admin_login_template, $version, $version_mini_app);
-    nm_adminInstantReply($from_id, $text_admin, $keyboardadmin, 'HTML');
-    $miniAppInstructionHidden = isset($user['hide_mini_app_instruction']) ? (string) $user['hide_mini_app_instruction'] : '0';
-    if ($miniAppInstructionHidden !== '1') {
-        $miniAppInstructionKeyboard = json_encode([
-            'inline_keyboard' => [
-                [
-                    ['text' => 'دیگر نمایش نده ⛓️‍💥', 'callback_data' => 'hide_mini_app_instruction'],
-                ],
-            ],
-        ]);
         nm_adminInstantReply($from_id, $miniAppInstructionText, $miniAppInstructionKeyboard, 'HTML');
     }
 } elseif ($text == $textbotlang['Admin']['backadmin']) {
