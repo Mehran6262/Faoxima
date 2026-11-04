@@ -1292,6 +1292,16 @@ $paycount
     nm_adminInstantReply($from_id, $textbotlang['Admin']['managepanel']['Inbound']['gettypepanel'], $keyboardtypepanel, 'HTML');
 } elseif (preg_match('/typepanel#(.*)/', $datain, $dataget)) {
     $typepanel = $dataget[1];
+
+    // متوقف کردن لودینگ دکمه شیشه‌ای در تلگرام
+    if (!empty($callback_query_id) && function_exists('telegram')) {
+        @telegram('answerCallbackQuery', [
+            'callback_query_id' => $callback_query_id,
+            'text'              => 'انتخاب شد: ' . $typepanel,
+            'show_alert'        => false,
+        ]);
+    }
+
     $rx_inline_mode = (isset($setting['inlinebtnmain']) && $setting['inlinebtnmain'] === 'oninline');
     if ($rx_inline_mode) {
         $rx_addpanel_back_kb = json_encode([
@@ -1305,7 +1315,8 @@ $paycount
     nm_adminInstantReply($from_id, $textbotlang['Admin']['managepanel']['addpanelname'], $rx_addpanel_back_kb, 'HTML');
     step("add_name_panel", $from_id);
     savedata("clear", "type", $typepanel);
-} elseif ($user['step'] == "add_name_panel") {
+}
+    elseif ($user['step'] == "add_name_panel") {
     if (in_array($text, $marzban_list)) {
         nm_adminInstantReply($from_id, $textbotlang['Admin']['managepanel']['Repeatpanel'], $backadmin, 'HTML');
         return;
