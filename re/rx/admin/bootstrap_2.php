@@ -1283,8 +1283,17 @@ $paycount
     nm_adminInstantReply($from_id, $statisticsall, $keyboardadmin, 'HTML');
 } elseif ($datain == "settingaffiliatesf") {
     nm_adminInstantReply($from_id, $textbotlang['users']['selectoption'], $affiliates, 'HTML');
-} elseif ($text == $textbotlang['Admin']['btnkeyboardadmin']['addpanel'] && $adminrulecheck['rule'] == "administrator") {
-    nm_adminInstantReply($from_id, $textbotlang['Admin']['managepanel']['Inbound']['gettypepanel'], $keyboardtypepanel, 'HTML');
+} elseif (
+    (($datain ?? '') === 'admin_addpanel'
+        || $text == $textbotlang['Admin']['btnkeyboardadmin']['addpanel'])
+    && (($adminrulecheck['rule'] ?? '') === 'administrator')
+) {
+    nm_adminInstantReply(
+        $from_id,
+        $textbotlang['Admin']['managepanel']['Inbound']['gettypepanel'],
+        $keyboardtypepanel,
+        'HTML'
+    );
 } elseif (preg_match('/typepanel#(.*)/', $datain, $dataget)) {
     $typepanel = $dataget[1];
     $rx_inline_mode = (isset($setting['inlinebtnmain']) && $setting['inlinebtnmain'] === 'oninline');
