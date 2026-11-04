@@ -54,6 +54,10 @@ try {
     $text = $message['text'] ?? '';
     $data = $callback_query['data'] ?? '';
 
+    // === اصلاحیه حیاتی: تعریف متغیرهای استاندارد کالبک ربات ===
+    $datain = $data;
+    $callback_query_id = $callback_query['id'] ?? null;
+
     $from_id = $message['from']['id']
         ?? $callback_query['from']['id']
         ?? $chat_member['from']['id']
@@ -66,6 +70,10 @@ try {
     // optional but commonly used
     $chat_id = $message['chat']['id']
         ?? ($callback_query['message']['chat']['id'] ?? ($chat_member['chat']['id'] ?? 0));
+
+    // در صورتی که دکمه اینلاین کلیک شد، پیام کالبک را هم داشته باشیم
+    $message_id = $message['message_id']
+        ?? ($callback_query['message']['message_id'] ?? null);
 
     file_put_contents(
         __DIR__ . '/eval_trace.log',
