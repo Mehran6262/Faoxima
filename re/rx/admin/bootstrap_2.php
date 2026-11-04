@@ -153,11 +153,12 @@ $is_admin_entry_clicked = (
     (isset($textadmin) && is_array($textadmin) && in_array($text, $textadmin)) ||
     $text === "👨‍💼 پنل مدیریت" ||
     $text === "👨‍🔧 بخش ادمین" ||
-    ($datain ?? '') === "admin"
+    ($datain ?? '') === "admin" ||
+    ($datain ?? '') === "set_adminmgr"
 );
 
 if ($is_current_user_admin && $is_admin_entry_clicked) {
-    if (($datain ?? '') === "admin") {
+    if (in_array(($datain ?? ''), ["admin", "set_adminmgr"], true)) {
         deletemessage($from_id, $message_id);
     }
 
@@ -1283,17 +1284,8 @@ $paycount
     nm_adminInstantReply($from_id, $statisticsall, $keyboardadmin, 'HTML');
 } elseif ($datain == "settingaffiliatesf") {
     nm_adminInstantReply($from_id, $textbotlang['users']['selectoption'], $affiliates, 'HTML');
-} elseif (
-    (($datain ?? '') === 'admin_addpanel'
-        || $text == $textbotlang['Admin']['btnkeyboardadmin']['addpanel'])
-) {
-    nm_adminInstantReply(
-        $from_id,
-        $textbotlang['Admin']['managepanel']['Inbound']['gettypepanel'],
-        $keyboardtypepanel,
-        'HTML'
-    );
-}
+} elseif ($text == $textbotlang['Admin']['btnkeyboardadmin']['addpanel'] && $adminrulecheck['rule'] == "administrator") {
+    nm_adminInstantReply($from_id, $textbotlang['Admin']['managepanel']['Inbound']['gettypepanel'], $keyboardtypepanel, 'HTML');
 } elseif (preg_match('/typepanel#(.*)/', $datain, $dataget)) {
     $typepanel = $dataget[1];
     $rx_inline_mode = (isset($setting['inlinebtnmain']) && $setting['inlinebtnmain'] === 'oninline');
