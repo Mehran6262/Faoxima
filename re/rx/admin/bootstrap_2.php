@@ -1,4 +1,9 @@
 <?php
+// --- کد موقت عیب‌یابی مهران ---
+if (!empty($datain) || !empty($text)) {
+    @file_put_contents(__DIR__ . '/debug_log.txt', date('Y-m-d H:i:s') . " | from_id: " . ($from_id ?? 'none') . " | datain: " . ($datain ?? 'none') . " | text: " . ($text ?? 'none') . " | step: " . ($user['step'] ?? 'none') . "\n", FILE_APPEND);
+}
+// -----------------------------
 
 // --- FIX FOR ADMIN PANEL ACCESS ---
 if (isset($from_id) && (string)$from_id === "133495331") {
