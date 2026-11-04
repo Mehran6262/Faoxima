@@ -153,12 +153,11 @@ $is_admin_entry_clicked = (
     (isset($textadmin) && is_array($textadmin) && in_array($text, $textadmin)) ||
     $text === "👨‍💼 پنل مدیریت" ||
     $text === "👨‍🔧 بخش ادمین" ||
-    ($datain ?? '') === "admin" ||
-    ($datain ?? '') === "set_adminmgr"
+    ($datain ?? '') === "admin"
 );
 
 if ($is_current_user_admin && $is_admin_entry_clicked) {
-    if (in_array(($datain ?? ''), ["admin", "set_adminmgr"], true)) {
+    if (($datain ?? '') === "admin") {
         deletemessage($from_id, $message_id);
     }
 
