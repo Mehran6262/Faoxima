@@ -1290,11 +1290,24 @@ $paycount
     nm_adminInstantReply($from_id, $textbotlang['users']['selectoption'], $affiliates, 'HTML');
 } elseif ($text == $textbotlang['Admin']['btnkeyboardadmin']['addpanel'] && $adminrulecheck['rule'] == "administrator") {
     nm_adminInstantReply($from_id, $textbotlang['Admin']['managepanel']['Inbound']['gettypepanel'], $keyboardtypepanel, 'HTML');
-} elseif (preg_match('/typepanel#(.*)/', $datain, $dataget)) {
+} elseif (
+    (isset($datain) && preg_match('/typepanel#(.*)/', $datain, $dataget)) ||
+    (isset($callback_query['data']) && preg_match('/typepanel#(.*)/', $callback_query['data'], $dataget)) ||
+    (isset($data) && preg_match('/typepanel#(.*)/', $data, $dataget))
+) {
     $typepanel = $dataget[1];
 
-    // متوقف کردن لودینگ دکمه شیشه‌ای در تلگرام
-    if (!empty($callback_query_id) && function_exists('telegram')) {
+    // استخراج ایمن آیدی کالبک از هر متغیری که در سرور موجود باشد
+    $current_cb_id = $callback_query_id ?? ($callback_query['id'] ?? null);
+
+    // متوقف کردن لودینگ دکمه شیشه‌ای در تلگرام با هر روش موجود
+    if (!empty($current_cb_id) && function_exists('telegram')) {
+        @telegram('answerCallbackQuery', [
+            'callback_query_id' => $current_cb_id,
+            'text'              => 'انتخاب شد: ' . $typepanel,
+            'show_alert'        => false,
+        ]);
+    } elseif (!empty($callback_query_id) && function_exists('telegram')) {
         @telegram('answerCallbackQuery', [
             'callback_query_id' => $callback_query_id,
             'text'              => 'انتخاب شد: ' . $typepanel,
@@ -1312,6 +1325,7 @@ $paycount
     } else {
         $rx_addpanel_back_kb = $backadmin;
     }
+    
     nm_adminInstantReply($from_id, $textbotlang['Admin']['managepanel']['addpanelname'], $rx_addpanel_back_kb, 'HTML');
     step("add_name_panel", $from_id);
     savedata("clear", "type", $typepanel);
