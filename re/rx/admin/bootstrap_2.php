@@ -1293,7 +1293,6 @@ $paycount
 ) {
     $typepanel = $dataget[1];
 
-    // پاک کردن حالت لودینگ دکمه در تلگرام
     $current_cb_id = $callback_query_id ?? ($callback_query['id'] ?? null);
     if (!empty($current_cb_id) && function_exists('telegram')) {
         @telegram('answerCallbackQuery', [
@@ -1303,7 +1302,6 @@ $paycount
         ]);
     }
 
-    // ذخیره نوع پنل و رفتن به استپ دریافت نام
     savedata("save", "type", $typepanel);
     step("add_name_panel", $from_id);
 
@@ -1320,13 +1318,37 @@ $paycount
 
     nm_adminInstantReply($from_id, $textbotlang['Admin']['managepanel']['addpanelname'], $rx_addpanel_back_kb, 'HTML');
     return;
-}
+
 } elseif ($user['step'] == "add_name_panel") {
     $check_exist_panel = select("panel", "namepanel", $text);
     if ($check_exist_panel) {
         nm_adminInstantReply($from_id, $textbotlang['Admin']['managepanel']['Repeatpanel'], $backadmin, 'HTML');
         return;
     }
+    $userdata = json_decode($user['Processing_value'], true);
+    savedata("save", "namepanel", $text);
+    
+    if (isset($userdata['type']) && $userdata['type'] == "Manualsale") {
+        nm_adminInstantReply($from_id, $textbotlang['Admin']['managepanel']['getlimitedpanel'], $backadmin, 'HTML');
+        step('getlimitedpanel', $from_id);
+        savedata("save", "url_panel", "null");
+        savedata("save", "username", "null");
+        savedata("save", "password", "null");
+        return;
+    }
+    if (isset($userdata['type']) && $userdata['type'] == "guard") {
+        $defaultGuardUrl = guardGetBaseUrl();
+        savedata("save", "url_panel", $defaultGuardUrl);
+        savedata("save", "username", "null");
+        savedata("save", "password", "null");
+        nm_adminInstantReply($from_id, $textbotlang['Admin']['managepanel']['getapikey'], $backadmin, 'HTML');
+        step('add_guard_api_key', $from_id);
+        return;
+    }
+    nm_adminInstantReply($from_id, $textbotlang['Admin']['managepanel']['addpanelurl'], $backadmin, 'HTML');
+    step('add_link_panel', $from_id);
+    return;
+}
     $userdata = json_decode($user['Processing_value'], true);
     savedata("save", "namepanel", $text);
     
