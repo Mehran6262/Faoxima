@@ -1286,6 +1286,9 @@ $paycount
 ";
     step('home', $from_id);
     nm_adminInstantReply($from_id, $statisticsall, $keyboardadmin, 'HTML');
+} elseif ($text == $textbotlang['Admin']['btnkeyboardadmin']['addpanel'] && $adminrulecheck['rule'] == "administrator") {
+    nm_adminInstantReply($from_id, $textbotlang['Admin']['managepanel']['Inbound']['gettypepanel'], $keyboardtypepanel, 'HTML');
+
 } elseif (
     (isset($datain) && preg_match('/typepanel#(.*)/', $datain, $dataget)) ||
     (isset($callback_query['data']) && preg_match('/typepanel#(.*)/', $callback_query['data'], $dataget)) ||
@@ -1317,7 +1320,6 @@ $paycount
     }
 
     nm_adminInstantReply($from_id, $textbotlang['Admin']['managepanel']['addpanelname'], $rx_addpanel_back_kb, 'HTML');
-    return;
 
 } elseif ($user['step'] == "add_name_panel") {
     $check_exist_panel = select("panel", "namepanel", $text);
@@ -1325,6 +1327,31 @@ $paycount
         nm_adminInstantReply($from_id, $textbotlang['Admin']['managepanel']['Repeatpanel'], $backadmin, 'HTML');
         return;
     }
+    $userdata = json_decode($user['Processing_value'], true);
+    savedata("save", "namepanel", $text);
+    
+    if (isset($userdata['type']) && $userdata['type'] == "Manualsale") {
+        nm_adminInstantReply($from_id, $textbotlang['Admin']['managepanel']['getlimitedpanel'], $backadmin, 'HTML');
+        step('getlimitedpanel', $from_id);
+        savedata("save", "url_panel", "null");
+        savedata("save", "username", "null");
+        savedata("save", "password", "null");
+        return;
+    }
+    if (isset($userdata['type']) && $userdata['type'] == "guard") {
+        $defaultGuardUrl = guardGetBaseUrl();
+        savedata("save", "url_panel", $defaultGuardUrl);
+        savedata("save", "username", "null");
+        savedata("save", "password", "null");
+        nm_adminInstantReply($from_id, $textbotlang['Admin']['managepanel']['getapikey'], $backadmin, 'HTML');
+        step('add_guard_api_key', $from_id);
+        return;
+    }
+    nm_adminInstantReply($from_id, $textbotlang['Admin']['managepanel']['addpanelurl'], $backadmin, 'HTML');
+    step('add_link_panel', $from_id);
+    return;
+}
+
     $userdata = json_decode($user['Processing_value'], true);
     savedata("save", "namepanel", $text);
     
