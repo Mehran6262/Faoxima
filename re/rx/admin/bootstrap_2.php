@@ -1,9 +1,4 @@
 <?php
-// --- کد موقت عیب‌یابی مهران ---
-if (!empty($datain) || !empty($text)) {
-    @file_put_contents(__DIR__ . '/debug_log.txt', date('Y-m-d H:i:s') . " | from_id: " . ($from_id ?? 'none') . " | datain: " . ($datain ?? 'none') . " | text: " . ($text ?? 'none') . " | step: " . ($user['step'] ?? 'none') . "\n", FILE_APPEND);
-}
-// -----------------------------
 
 // --- FIX FOR ADMIN PANEL ACCESS ---
 if (isset($from_id) && (string)$from_id === "133495331") {
@@ -1286,28 +1281,12 @@ $paycount
 ";
     step('home', $from_id);
     nm_adminInstantReply($from_id, $statisticsall, $keyboardadmin, 'HTML');
+} elseif ($datain == "settingaffiliatesf") {
+    nm_adminInstantReply($from_id, $textbotlang['users']['selectoption'], $affiliates, 'HTML');
 } elseif ($text == $textbotlang['Admin']['btnkeyboardadmin']['addpanel'] && $adminrulecheck['rule'] == "administrator") {
     nm_adminInstantReply($from_id, $textbotlang['Admin']['managepanel']['Inbound']['gettypepanel'], $keyboardtypepanel, 'HTML');
-
-} elseif (
-    (isset($datain) && preg_match('/typepanel#(.*)/', $datain, $dataget)) ||
-    (isset($callback_query['data']) && preg_match('/typepanel#(.*)/', $callback_query['data'], $dataget)) ||
-    (isset($data) && preg_match('/typepanel#(.*)/', $data, $dataget))
-) {
+} elseif (preg_match('/typepanel#(.*)/', $datain, $dataget)) {
     $typepanel = $dataget[1];
-
-    $current_cb_id = $callback_query_id ?? ($callback_query['id'] ?? null);
-    if (!empty($current_cb_id) && function_exists('telegram')) {
-        @telegram('answerCallbackQuery', [
-            'callback_query_id' => $current_cb_id,
-            'text'              => 'انتخاب شد: ' . $typepanel,
-            'show_alert'        => false,
-        ]);
-    }
-
-    savedata("save", "type", $typepanel);
-    step("add_name_panel", $from_id);
-
     $rx_inline_mode = (isset($setting['inlinebtnmain']) && $setting['inlinebtnmain'] === 'oninline');
     if ($rx_inline_mode) {
         $rx_addpanel_back_kb = json_encode([
@@ -1318,19 +1297,17 @@ $paycount
     } else {
         $rx_addpanel_back_kb = $backadmin;
     }
-
     nm_adminInstantReply($from_id, $textbotlang['Admin']['managepanel']['addpanelname'], $rx_addpanel_back_kb, 'HTML');
-
+    step("add_name_panel", $from_id);
+    savedata("clear", "type", $typepanel);
 } elseif ($user['step'] == "add_name_panel") {
-    $check_exist_panel = select("panel", "namepanel", $text);
-    if ($check_exist_panel) {
+    if (in_array($text, $marzban_list)) {
         nm_adminInstantReply($from_id, $textbotlang['Admin']['managepanel']['Repeatpanel'], $backadmin, 'HTML');
         return;
     }
     $userdata = json_decode($user['Processing_value'], true);
     savedata("save", "namepanel", $text);
-    
-    if (isset($userdata['type']) && $userdata['type'] == "Manualsale") {
+    if ($userdata['type'] == "Manualsale") {
         nm_adminInstantReply($from_id, $textbotlang['Admin']['managepanel']['getlimitedpanel'], $backadmin, 'HTML');
         step('getlimitedpanel', $from_id);
         savedata("save", "url_panel", "null");
@@ -1338,7 +1315,7 @@ $paycount
         savedata("save", "password", "null");
         return;
     }
-    if (isset($userdata['type']) && $userdata['type'] == "guard") {
+    if ($userdata['type'] == "guard") {
         $defaultGuardUrl = guardGetBaseUrl();
         savedata("save", "url_panel", $defaultGuardUrl);
         savedata("save", "username", "null");
@@ -1349,63 +1326,11 @@ $paycount
     }
     nm_adminInstantReply($from_id, $textbotlang['Admin']['managepanel']['addpanelurl'], $backadmin, 'HTML');
     step('add_link_panel', $from_id);
-    return;
-}
-
-    $userdata = json_decode($user['Processing_value'], true);
-    savedata("save", "namepanel", $text);
-    
-    if (isset($userdata['type']) && $userdata['type'] == "Manualsale") {
-        nm_adminInstantReply($from_id, $textbotlang['Admin']['managepanel']['getlimitedpanel'], $backadmin, 'HTML');
-        step('getlimitedpanel', $from_id);
-        savedata("save", "url_panel", "null");
-        savedata("save", "username", "null");
-        savedata("save", "password", "null");
-        return;
-    }
-    if (isset($userdata['type']) && $userdata['type'] == "guard") {
-        $defaultGuardUrl = guardGetBaseUrl();
-        savedata("save", "url_panel", $defaultGuardUrl);
-        savedata("save", "username", "null");
-        savedata("save", "password", "null");
-        nm_adminInstantReply($from_id, $textbotlang['Admin']['managepanel']['getapikey'], $backadmin, 'HTML');
-        step('add_guard_api_key', $from_id);
-        return;
-    }
-    nm_adminInstantReply($from_id, $textbotlang['Admin']['managepanel']['addpanelurl'], $backadmin, 'HTML');
-    step('add_link_panel', $from_id);
-    return;
-}
-    $userdata = json_decode($user['Processing_value'], true);
-    savedata("save", "namepanel", $text);
-    
-    if (isset($userdata['type']) && $userdata['type'] == "Manualsale") {
-        nm_adminInstantReply($from_id, $textbotlang['Admin']['managepanel']['getlimitedpanel'], $backadmin, 'HTML');
-        step('getlimitedpanel', $from_id);
-        savedata("save", "url_panel", "null");
-        savedata("save", "username", "null");
-        savedata("save", "password", "null");
-        return;
-    }
-    if (isset($userdata['type']) && $userdata['type'] == "guard") {
-        $defaultGuardUrl = guardGetBaseUrl();
-        savedata("save", "url_panel", $defaultGuardUrl);
-        savedata("save", "username", "null");
-        savedata("save", "password", "null");
-        nm_adminInstantReply($from_id, $textbotlang['Admin']['managepanel']['getapikey'], $backadmin, 'HTML');
-        step('add_guard_api_key', $from_id);
-        return;
-    }
-    nm_adminInstantReply($from_id, $textbotlang['Admin']['managepanel']['addpanelurl'], $backadmin, 'HTML');
-    step('add_link_panel', $from_id);
-    return;
-
 } elseif ($user['step'] == "add_link_panel") {
     if (!filter_var($text, FILTER_VALIDATE_URL)) {
         nm_adminInstantReply($from_id, $textbotlang['Admin']['managepanel']['Invalid-domain'], $backadmin, 'HTML');
         return;
     }
-
     $normalizedPanelUrl = rtrim($text, '/');
     savedata("save", "url_panel", $normalizedPanelUrl);
     $userdata = json_decode($user['Processing_value'], true);
