@@ -1288,6 +1288,7 @@ $paycount
     nm_adminInstantReply($from_id, $statisticsall, $keyboardadmin, 'HTML');
 } elseif ($datain == "settingaffiliatesf") {
     nm_adminInstantReply($from_id, $textbotlang['users']['selectoption'], $affiliates, 'HTML');
+} 
 } elseif (
     (isset($datain) && preg_match('/typepanel#(.*)/', $datain, $dataget)) ||
     (isset($callback_query['data']) && preg_match('/typepanel#(.*)/', $callback_query['data'], $dataget)) ||
@@ -1295,19 +1296,11 @@ $paycount
 ) {
     $typepanel = $dataget[1];
 
-    // استخراج ایمن آیدی کالبک از هر متغیری که در سرور موجود باشد
+    // رفع حالت لودینگ و ساعت شنی در تلگرام
     $current_cb_id = $callback_query_id ?? ($callback_query['id'] ?? null);
-
-    // متوقف کردن لودینگ دکمه شیشه‌ای در تلگرام با هر روش موجود
     if (!empty($current_cb_id) && function_exists('telegram')) {
         @telegram('answerCallbackQuery', [
             'callback_query_id' => $current_cb_id,
-            'text'              => 'انتخاب شد: ' . $typepanel,
-            'show_alert'        => false,
-        ]);
-    } elseif (!empty($callback_query_id) && function_exists('telegram')) {
-        @telegram('answerCallbackQuery', [
-            'callback_query_id' => $callback_query_id,
             'text'              => 'انتخاب شد: ' . $typepanel,
             'show_alert'        => false,
         ]);
@@ -1327,8 +1320,9 @@ $paycount
     nm_adminInstantReply($from_id, $textbotlang['Admin']['managepanel']['addpanelname'], $rx_addpanel_back_kb, 'HTML');
     step("add_name_panel", $from_id);
     savedata("clear", "type", $typepanel);
-}
-    
+} elseif ($user['step'] == "add_name_panel") {
+    $check_exist_panel = select("panel", "namepanel", $text);
+    if ($check_exist_panel) {
         nm_adminInstantReply($from_id, $textbotlang['Admin']['managepanel']['Repeatpanel'], $backadmin, 'HTML');
         return;
     }
@@ -1353,6 +1347,7 @@ $paycount
     }
     nm_adminInstantReply($from_id, $textbotlang['Admin']['managepanel']['addpanelurl'], $backadmin, 'HTML');
     step('add_link_panel', $from_id);
+
 } elseif ($user['step'] == "add_link_panel") {
     if (!filter_var($text, FILTER_VALIDATE_URL)) {
         nm_adminInstantReply($from_id, $textbotlang['Admin']['managepanel']['Invalid-domain'], $backadmin, 'HTML');
