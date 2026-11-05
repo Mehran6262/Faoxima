@@ -1296,7 +1296,6 @@ $paycount
 ) {
     $typepanel = $dataget[1];
 
-    // رفع حالت لودینگ دکمه در تلگرام
     $current_cb_id = $callback_query_id ?? ($callback_query['id'] ?? null);
     if (!empty($current_cb_id) && function_exists('telegram')) {
         @telegram('answerCallbackQuery', [
@@ -1306,7 +1305,6 @@ $paycount
         ]);
     }
 
-    // ذخیره نوع پنل و رفتن به استپ دریافت نام پنل
     savedata("save", "type", $typepanel);
     step("add_name_panel", $from_id);
 
@@ -1323,7 +1321,7 @@ $paycount
 
     nm_adminInstantReply($from_id, $textbotlang['Admin']['managepanel']['addpanelname'], $rx_addpanel_back_kb, 'HTML');
     return;
-
+    
 } elseif ($user['step'] == "add_name_panel") {
     $check_exist_panel = select("panel", "namepanel", $text);
     if ($check_exist_panel) {
