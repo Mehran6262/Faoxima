@@ -164,37 +164,81 @@ if ($user['step'] == "createusertest" || preg_match('/locationtest_(.*)/', $data
         $textcreatuser = str_replace('{password}', $dataoutput['subscription_url'], $textcreatuser);
         update("invoice", "user_info", $dataoutput['subscription_url'], "id_invoice", $randomString);
     }
-    // Temporary diagnostic: bypass image/QR generation for test accounts.
-error_log('[TEST-DELIVERY] reached plain-text delivery');
+    // Deliver the test link independently of QR generation and image captions.
+    $testDeliveryText = "✅ اکانت تست ساخته شد\n";
+    $testDeliveryText .= "نام کاربری: " . $dataoutput['username'];
+    $testDeliveryText .= "\nمدت اعتبار: " . $marzban_list_get['time_usertest'] . " ساعت";
+    $testDeliveryText .= "\nحجم: " . $marzban_list_get['val_usertest'] . " مگابایت";
+    $testQrPayload = '';
+    if (is_string($output_config_link) && trim($output_config_link) !== '') {
+        $testQrPayload = trim($output_config_link);
+        $testDeliveryText .= "\n\nلینک اشتراک:\n" . $testQrPayload;
+    } elseif (is_array($dataoutput['configs'] ?? null)) {
+        foreach ($dataoutput['configs'] as $testConfig) {
+            if (is_string($testConfig) && trim($testConfig) !== '') {
+                $testQrPayload = trim($testConfig);
+                $testDeliveryText .= "\n\nکانفیگ اتصال:\n" . $testQrPayload;
+                break;
+            }
+        }
+    }
+    $testHelpKeyboard = json_encode([
+        'inline_keyboard' => [[[
+            'text' => '📚 راهنمای اتصال',
+            'callback_data' => 'helpbtn',
+        ]]],
+    ], JSON_UNESCAPED_UNICODE);
+    $testCheckResult = static function ($result, $stage) {
+        if (is_object($result)) {
+            $result = (array) $result;
+        } elseif (is_string($result)) {
+            $result = json_decode($result, true);
+        }
+        $ok = is_array($result) && !empty($result['ok']);
+        // Do not log tokens, subscription links, message contents or raw responses.
+        error_log('[TEST-DELIVERY] stage=' . $stage . ' ok=' . ($ok ? 'yes' : 'no') .
+            ' code=' . (is_array($result) ? (int) ($result['error_code'] ?? 0) : 0));
+        return $ok;
+    };
+    $testTextResult = telegram('sendMessage', [
+        'chat_id' => $from_id,
+        'text' => $testDeliveryText,
+        'reply_markup' => $testHelpKeyboard,
+    ]);
+    $testCheckResult($testTextResult, 'text');
 
-$testDeliveryText = "✅ اکانت تست ساخته شد\n";
-$testDeliveryText .= "نام کاربری: " . $dataoutput['username'];
-
-if (is_string($output_config_link) && trim($output_config_link) !== '') {
-    $testDeliveryText .= "\n\nلینک اشتراک:\n" . $output_config_link;
-}
-
-$testDeliveryResult = telegram('sendMessage', [
-    'chat_id' => $from_id,
-    'text' => $testDeliveryText,
-]);
-
-if (is_object($testDeliveryResult)) {
-    $testDeliveryResult = (array) $testDeliveryResult;
-} elseif (is_string($testDeliveryResult)) {
-    $testDeliveryResult = json_decode($testDeliveryResult, true);
-}
-
-if (is_array($testDeliveryResult)) {
-    error_log(
-        '[TEST-DELIVERY] telegram_ok=' .
-        (!empty($testDeliveryResult['ok']) ? 'yes' : 'no') .
-        ' error_code=' . ($testDeliveryResult['error_code'] ?? 'none')
-    );
-} else {
-    error_log('[TEST-DELIVERY] Telegram result unavailable in expected format');
-}
-
+    $testQrFile = null;
+    if ($testQrPayload !== '') {
+        try {
+            $testQr = createqrcode($testQrPayload);
+            $testQrBytes = $testQr->getString();
+            $testQrFile = tempnam(sys_get_temp_dir(), 'testqr_');
+            if ($testQrFile === false) {
+                $testQrFile = null;
+                throw new RuntimeException('Temporary QR file unavailable');
+            }
+            if (!is_string($testQrBytes) || $testQrBytes === '' ||
+                file_put_contents($testQrFile, $testQrBytes) !== strlen($testQrBytes)) {
+                throw new RuntimeException('QR file could not be written');
+            }
+            $testPhotoResult = telegram('sendPhoto', [
+                'chat_id' => $from_id,
+                'photo' => new CURLFile($testQrFile, 'image/png', 'test-qr.png'),
+                'caption' => '📱 کد QR اتصال اکانت تست',
+                'reply_markup' => $testHelpKeyboard,
+            ]);
+            $testCheckResult($testPhotoResult, 'qr');
+        } catch (Throwable $testQrError) {
+            error_log('[TEST-DELIVERY] stage=qr exception=' . get_class($testQrError) .
+                ' file=' . basename($testQrError->getFile()) . ' line=' . $testQrError->getLine());
+        } finally {
+            if (is_string($testQrFile) && is_file($testQrFile)) {
+                @unlink($testQrFile);
+            }
+        }
+    } else {
+        error_log('[TEST-DELIVERY] stage=qr skipped=no_connection_payload');
+    }
     sendmessage($from_id, $textbotlang['users']['selectoption'], $keyboard, 'HTML');
     step('home', $from_id);
     if ($marzban_list_get['MethodUsername'] == "متن دلخواه + عدد ترتیبی" || $marzban_list_get['MethodUsername'] == "نام کاربری + عدد به ترتیب" || $marzban_list_get['MethodUsername'] == "آیدی عددی+عدد ترتیبی" || $marzban_list_get['MethodUsername'] == "متن دلخواه نماینده + عدد ترتیبی") {
