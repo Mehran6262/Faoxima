@@ -164,7 +164,37 @@ if ($user['step'] == "createusertest" || preg_match('/locationtest_(.*)/', $data
         $textcreatuser = str_replace('{password}', $dataoutput['subscription_url'], $textcreatuser);
         update("invoice", "user_info", $dataoutput['subscription_url'], "id_invoice", $randomString);
     }
-    sendMessageService($marzban_list_get, $dataoutput['configs'], $output_config_link, $dataoutput['username'], $usertestinfo, $textcreatuser, $randomString);
+    // Temporary diagnostic: bypass image/QR generation for test accounts.
+error_log('[TEST-DELIVERY] reached plain-text delivery');
+
+$testDeliveryText = "✅ اکانت تست ساخته شد\n";
+$testDeliveryText .= "نام کاربری: " . $dataoutput['username'];
+
+if (is_string($output_config_link) && trim($output_config_link) !== '') {
+    $testDeliveryText .= "\n\nلینک اشتراک:\n" . $output_config_link;
+}
+
+$testDeliveryResult = telegram('sendMessage', [
+    'chat_id' => $from_id,
+    'text' => $testDeliveryText,
+]);
+
+if (is_object($testDeliveryResult)) {
+    $testDeliveryResult = (array) $testDeliveryResult;
+} elseif (is_string($testDeliveryResult)) {
+    $testDeliveryResult = json_decode($testDeliveryResult, true);
+}
+
+if (is_array($testDeliveryResult)) {
+    error_log(
+        '[TEST-DELIVERY] telegram_ok=' .
+        (!empty($testDeliveryResult['ok']) ? 'yes' : 'no') .
+        ' error_code=' . ($testDeliveryResult['error_code'] ?? 'none')
+    );
+} else {
+    error_log('[TEST-DELIVERY] Telegram result unavailable in expected format');
+}
+
     sendmessage($from_id, $textbotlang['users']['selectoption'], $keyboard, 'HTML');
     step('home', $from_id);
     if ($marzban_list_get['MethodUsername'] == "متن دلخواه + عدد ترتیبی" || $marzban_list_get['MethodUsername'] == "نام کاربری + عدد به ترتیب" || $marzban_list_get['MethodUsername'] == "آیدی عددی+عدد ترتیبی" || $marzban_list_get['MethodUsername'] == "متن دلخواه نماینده + عدد ترتیبی") {
