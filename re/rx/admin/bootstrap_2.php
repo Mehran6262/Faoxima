@@ -1316,9 +1316,13 @@ $paycount
         $rx_addpanel_back_kb = $backadmin;
     }
     
-    nm_adminInstantReply($from_id, $textbotlang['Admin']['managepanel']['addpanelname'], $rx_addpanel_back_kb, 'HTML');
+    // ذخیره نوع پنل و انتقال استپ به دریافت نام پنل
+    savedata("save", "type", $typepanel);
     step("add_name_panel", $from_id);
-    savedata("clear", "type", $typepanel);
+    
+    nm_adminInstantReply($from_id, $textbotlang['Admin']['managepanel']['addpanelname'], $rx_addpanel_back_kb, 'HTML');
+    return;
+
 } elseif ($user['step'] == "add_name_panel") {
     $check_exist_panel = select("panel", "namepanel", $text);
     if ($check_exist_panel) {
@@ -1327,7 +1331,8 @@ $paycount
     }
     $userdata = json_decode($user['Processing_value'], true);
     savedata("save", "namepanel", $text);
-    if ($userdata['type'] == "Manualsale") {
+    
+    if (isset($userdata['type']) && $userdata['type'] == "Manualsale") {
         nm_adminInstantReply($from_id, $textbotlang['Admin']['managepanel']['getlimitedpanel'], $backadmin, 'HTML');
         step('getlimitedpanel', $from_id);
         savedata("save", "url_panel", "null");
@@ -1335,7 +1340,7 @@ $paycount
         savedata("save", "password", "null");
         return;
     }
-    if ($userdata['type'] == "guard") {
+    if (isset($userdata['type']) && $userdata['type'] == "guard") {
         $defaultGuardUrl = guardGetBaseUrl();
         savedata("save", "url_panel", $defaultGuardUrl);
         savedata("save", "username", "null");
@@ -1346,6 +1351,8 @@ $paycount
     }
     nm_adminInstantReply($from_id, $textbotlang['Admin']['managepanel']['addpanelurl'], $backadmin, 'HTML');
     step('add_link_panel', $from_id);
+    return;
+
 } elseif ($user['step'] == "add_link_panel") {
     if (!filter_var($text, FILTER_VALIDATE_URL)) {
         nm_adminInstantReply($from_id, $textbotlang['Admin']['managepanel']['Invalid-domain'], $backadmin, 'HTML');
