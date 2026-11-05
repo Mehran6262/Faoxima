@@ -1291,11 +1291,12 @@ $paycount
 } elseif (
     (isset($datain) && preg_match('/typepanel#(.*)/', $datain, $dataget)) ||
     (isset($callback_query['data']) && preg_match('/typepanel#(.*)/', $callback_query['data'], $dataget)) ||
-    (isset($data) && preg_match('/typepanel#(.*)/', $data, $dataget))
+    (isset($data) && preg_match('/typepanel#(.*)/', $data, $dataget)) ||
+    (isset($text) && preg_match('/typepanel#(.*)/', $text, $dataget))
 ) {
     $typepanel = $dataget[1];
 
-    // رفع حالت لودینگ و ساعت شنی در تلگرام
+    // رفع حالت لودینگ دکمه در تلگرام
     $current_cb_id = $callback_query_id ?? ($callback_query['id'] ?? null);
     if (!empty($current_cb_id) && function_exists('telegram')) {
         @telegram('answerCallbackQuery', [
@@ -1304,6 +1305,10 @@ $paycount
             'show_alert'        => false,
         ]);
     }
+
+    // ذخیره نوع پنل و رفتن به استپ دریافت نام پنل
+    savedata("save", "type", $typepanel);
+    step("add_name_panel", $from_id);
 
     $rx_inline_mode = (isset($setting['inlinebtnmain']) && $setting['inlinebtnmain'] === 'oninline');
     if ($rx_inline_mode) {
@@ -1315,11 +1320,7 @@ $paycount
     } else {
         $rx_addpanel_back_kb = $backadmin;
     }
-    
-    // ذخیره نوع پنل و انتقال استپ به دریافت نام پنل
-    savedata("save", "type", $typepanel);
-    step("add_name_panel", $from_id);
-    
+
     nm_adminInstantReply($from_id, $textbotlang['Admin']['managepanel']['addpanelname'], $rx_addpanel_back_kb, 'HTML');
     return;
 
@@ -1358,6 +1359,7 @@ $paycount
         nm_adminInstantReply($from_id, $textbotlang['Admin']['managepanel']['Invalid-domain'], $backadmin, 'HTML');
         return;
     }
+
     $normalizedPanelUrl = rtrim($text, '/');
     savedata("save", "url_panel", $normalizedPanelUrl);
     $userdata = json_decode($user['Processing_value'], true);
