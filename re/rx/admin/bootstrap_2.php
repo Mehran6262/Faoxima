@@ -1286,16 +1286,14 @@ $paycount
 ";
     step('home', $from_id);
     nm_adminInstantReply($from_id, $statisticsall, $keyboardadmin, 'HTML');
-} elseif ($datain == "settingaffiliatesf") {
-    nm_adminInstantReply($from_id, $textbotlang['users']['selectoption'], $affiliates, 'HTML');
 } elseif (
     (isset($datain) && preg_match('/typepanel#(.*)/', $datain, $dataget)) ||
     (isset($callback_query['data']) && preg_match('/typepanel#(.*)/', $callback_query['data'], $dataget)) ||
-    (isset($data) && preg_match('/typepanel#(.*)/', $data, $dataget)) ||
-    (isset($text) && preg_match('/typepanel#(.*)/', $text, $dataget))
+    (isset($data) && preg_match('/typepanel#(.*)/', $data, $dataget))
 ) {
     $typepanel = $dataget[1];
 
+    // پاک کردن حالت لودینگ دکمه در تلگرام
     $current_cb_id = $callback_query_id ?? ($callback_query['id'] ?? null);
     if (!empty($current_cb_id) && function_exists('telegram')) {
         @telegram('answerCallbackQuery', [
@@ -1305,6 +1303,7 @@ $paycount
         ]);
     }
 
+    // ذخیره نوع پنل و رفتن به استپ دریافت نام
     savedata("save", "type", $typepanel);
     step("add_name_panel", $from_id);
 
@@ -1321,7 +1320,7 @@ $paycount
 
     nm_adminInstantReply($from_id, $textbotlang['Admin']['managepanel']['addpanelname'], $rx_addpanel_back_kb, 'HTML');
     return;
-    
+}
 } elseif ($user['step'] == "add_name_panel") {
     $check_exist_panel = select("panel", "namepanel", $text);
     if ($check_exist_panel) {
