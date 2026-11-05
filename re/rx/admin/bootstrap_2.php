@@ -1288,7 +1288,6 @@ $paycount
     nm_adminInstantReply($from_id, $statisticsall, $keyboardadmin, 'HTML');
 } elseif ($datain == "settingaffiliatesf") {
     nm_adminInstantReply($from_id, $textbotlang['users']['selectoption'], $affiliates, 'HTML');
-} 
 } elseif (
     (isset($datain) && preg_match('/typepanel#(.*)/', $datain, $dataget)) ||
     (isset($callback_query['data']) && preg_match('/typepanel#(.*)/', $callback_query['data'], $dataget)) ||
@@ -1347,7 +1346,6 @@ $paycount
     }
     nm_adminInstantReply($from_id, $textbotlang['Admin']['managepanel']['addpanelurl'], $backadmin, 'HTML');
     step('add_link_panel', $from_id);
-
 } elseif ($user['step'] == "add_link_panel") {
     if (!filter_var($text, FILTER_VALIDATE_URL)) {
         nm_adminInstantReply($from_id, $textbotlang['Admin']['managepanel']['Invalid-domain'], $backadmin, 'HTML');
