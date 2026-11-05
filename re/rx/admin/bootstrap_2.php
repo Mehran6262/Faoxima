@@ -1288,8 +1288,6 @@ $paycount
     nm_adminInstantReply($from_id, $statisticsall, $keyboardadmin, 'HTML');
 } elseif ($datain == "settingaffiliatesf") {
     nm_adminInstantReply($from_id, $textbotlang['users']['selectoption'], $affiliates, 'HTML');
-} elseif ($text == $textbotlang['Admin']['btnkeyboardadmin']['addpanel'] && $adminrulecheck['rule'] == "administrator") {
-    nm_adminInstantReply($from_id, $textbotlang['Admin']['managepanel']['Inbound']['gettypepanel'], $keyboardtypepanel, 'HTML');
 } elseif (
     (isset($datain) && preg_match('/typepanel#(.*)/', $datain, $dataget)) ||
     (isset($callback_query['data']) && preg_match('/typepanel#(.*)/', $callback_query['data'], $dataget)) ||
@@ -1330,8 +1328,7 @@ $paycount
     step("add_name_panel", $from_id);
     savedata("clear", "type", $typepanel);
 }
-    elseif ($user['step'] == "add_name_panel") {
-    if (in_array($text, $marzban_list)) {
+    
         nm_adminInstantReply($from_id, $textbotlang['Admin']['managepanel']['Repeatpanel'], $backadmin, 'HTML');
         return;
     }
