@@ -934,12 +934,12 @@ function generateAuthStr($length = 10)
 }
 function createqrcode($contents)
 {
-    $builder = new Builder(
-        writer: new PngWriter(),
+    $builder = new \Endroid\QrCode\Builder\Builder(
+        writer: new \Endroid\QrCode\Writer\PngWriter(),
         writerOptions: [],
         data: $contents,
-        encoding: new Encoding('UTF-8'),
-        errorCorrectionLevel: ErrorCorrectionLevel::High,
+        encoding: new \Endroid\QrCode\Encoding\Encoding('UTF-8'),
+        errorCorrectionLevel: \Endroid\QrCode\ErrorCorrectionLevel::High,
         size: 500,
         margin: 2,
     );
