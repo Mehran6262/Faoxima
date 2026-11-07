@@ -26,12 +26,30 @@ if (empty($from_id)) {
 // تابع لاگ‌گذاری به استریم سرور Render
 if (!function_exists('rx_trace')) {
     function rx_trace($tag, array $ctx = []) {
-        $ctxStr = '';
-        foreach ($ctx as $k => $v) {
-            $ctxStr .= " $k=" . (is_scalar($v) || $v === null ? var_export($v, true) : json_encode($v));
-        }
-        error_log("TRACE: [$tag]$ctxStr");
+        static $previous = null;
+
+        $now = microtime(true);
+        $start = $_SERVER['REQUEST_TIME_FLOAT'] ?? $now;
+
+        $totalMs = ($now - $start) * 1000;
+        $stepMs = $previous === null
+            ? 0
+            : ($now - $previous) * 1000;
+
+        $previous = $now;
+
+        // عمداً متن پیام و مشخصات کاربر ثبت نمی‌شود.
+        error_log(sprintf(
+            '[PERF] tag=%s total_ms=%.1f step_ms=%.1f',
+            $tag,
+            $totalMs,
+            $stepMs
+        ));
     }
+
+    register_shutdown_function(function () {
+        rx_trace('REQUEST_END');
+    });
 }
 
 rx_trace('BOOT_START', [
