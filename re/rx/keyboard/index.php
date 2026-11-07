@@ -15,12 +15,17 @@ foreach ($__rx_parts as $__rx_part) {
     }
     $__rx_raw = file_get_contents($__rx_path);
     $__rx_raw = preg_replace('/^<\?php(\r\n|\r|\n)/', '', $__rx_raw, 1);
-    $__rx_code .= $__rx_raw;
+    // Timing only: keep all parts in the same eval and execution scope.
+    $__rx_tag = 'KB_BEFORE_' . basename($__rx_part, '.php');
+    $__rx_code .= "\nif (function_exists('rx_trace')) { rx_trace(" . var_export($__rx_tag, true) . "); }\n";
+    $__rx_code .= $__rx_raw . "\n";
 }
-unset($__rx_parts, $__rx_part, $__rx_path, $__rx_raw);
+unset($__rx_parts, $__rx_part, $__rx_path, $__rx_raw, $__rx_tag);
 
 try {
+    if (function_exists('rx_trace')) { rx_trace('KB_BEFORE_EVAL'); }
     eval($__rx_code);
+    if (function_exists('rx_trace')) { rx_trace('KB_AFTER_EVAL'); }
 } catch (Throwable $__rx_throwable) {
     rx_log_event('RX_EVAL_THROWABLE', $__rx_throwable->getMessage(), [
         'class' => get_class($__rx_throwable),
