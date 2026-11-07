@@ -83,40 +83,38 @@ try {
     );
     // === END input bootstrap ===
 
-    // === Define rx_trace to prevent undefined function fatal error ===
-    if (!function_exists('rx_trace')) {
-        function rx_trace(string $event, array $context = []): void
-        {
-            $parts = [
-                date('c'),
+  // === Performance tracing to Render stderr ===
+if (!function_exists('rx_trace')) {
+    function rx_trace(string $event, array $context = []): void
+    {
+        static $previous = null;
+
+        $now = microtime(true);
+        $start = $_SERVER['REQUEST_TIME_FLOAT'] ?? $now;
+
+        $totalMs = ($now - $start) * 1000;
+        $stepMs = $previous === null
+            ? 0
+            : ($now - $previous) * 1000;
+
+        $previous = $now;
+
+        // فقط نام مرحله و زمان؛ بدون متن پیام و اطلاعات کاربر.
+        error_log(
+            sprintf(
+                '[PERF] tag=%s total_ms=%.1f step_ms=%.1f',
                 $event,
-            ];
-
-            foreach ($context as $key => $value) {
-                if (is_array($value) || is_object($value)) {
-                    $value = json_encode(
-                        $value,
-                        JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES
-                    );
-                }
-
-                $parts[] = $key . '=' . (string) $value;
-            }
-
-            @file_put_contents(
-                __DIR__ . '/bootstrap_trace.log',
-                implode(' | ', $parts) . PHP_EOL,
-                FILE_APPEND
-            );
-        }
+                $totalMs,
+                $stepMs
+            ) . PHP_EOL,
+            3,
+            'php://stderr'
+        );
     }
+}
 
-    rx_trace('BEFORE_EVAL_INPUT', [
-        'from_id'   => $from_id ?? 0,
-        'Chat_type' => $Chat_type ?? 'NULL',
-        'text'      => mb_substr((string) ($text ?? ''), 0, 50),
-    ]);
-    // === END rx_trace definition ===
+rx_trace('BEFORE_EVAL_INPUT');
+// === END performance tracing ===
 
     eval($__rx_code);
 
