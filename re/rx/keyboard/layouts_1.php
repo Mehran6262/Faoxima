@@ -610,29 +610,39 @@ $settingPanelRows = array_merge($settingPanelRows, [
 ]);
 
 $setting_panel = rx_kb_encode($settingPanelRows);
+// Read payment settings once for this keyboard build; do not change the global helper.
+if (function_exists('rx_trace')) { rx_trace('KB_PAY_BATCH_BEFORE'); }
+$_rxKbPayRows = select('PaySetting', 'NamePay, ValuePay', null, null, 'fetchAll', ['cache' => false]);
+$_rxKbPayValues = [];
+foreach ($_rxKbPayRows as $_rxKbPayRow) {
+    if (!array_key_exists($_rxKbPayRow['NamePay'], $_rxKbPayValues)) {
+        $_rxKbPayValues[$_rxKbPayRow['NamePay']] = $_rxKbPayRow['ValuePay'];
+    }
+}
+if (function_exists('rx_trace')) { rx_trace('KB_PAY_BATCH_AFTER'); }
 if (function_exists('rx_trace')) { rx_trace('KBDB_layouts_1_L597_BEFORE'); }
-$PaySettingcard = getPaySettingValue("Cartstatus");
+$PaySettingcard = $_rxKbPayValues['Cartstatus'] ?? null;
 if (function_exists('rx_trace')) { rx_trace('KBDB_layouts_1_L597_AFTER'); }
 if (function_exists('rx_trace')) { rx_trace('KBDB_layouts_1_L598_BEFORE'); }
-$PaySettingnow = getPaySettingValue("nowpaymentstatus");
+$PaySettingnow = $_rxKbPayValues['nowpaymentstatus'] ?? null;
 if (function_exists('rx_trace')) { rx_trace('KBDB_layouts_1_L598_AFTER'); }
 if (function_exists('rx_trace')) { rx_trace('KBDB_layouts_1_L599_BEFORE'); }
-$PaySettingaqayepardakht = getPaySettingValue("statusaqayepardakht");
+$PaySettingaqayepardakht = $_rxKbPayValues['statusaqayepardakht'] ?? null;
 if (function_exists('rx_trace')) { rx_trace('KBDB_layouts_1_L599_AFTER'); }
 if (function_exists('rx_trace')) { rx_trace('KBDB_layouts_1_L600_BEFORE'); }
-$PaySettingpv = getPaySettingValue("Cartstatuspv");
+$PaySettingpv = $_rxKbPayValues['Cartstatuspv'] ?? null;
 if (function_exists('rx_trace')) { rx_trace('KBDB_layouts_1_L600_AFTER'); }
 if (function_exists('rx_trace')) { rx_trace('KBDB_layouts_1_L601_BEFORE'); }
-$usernamecart = getPaySettingValue("CartDirect");
+$usernamecart = $_rxKbPayValues['CartDirect'] ?? null;
 if (function_exists('rx_trace')) { rx_trace('KBDB_layouts_1_L601_AFTER'); }
 if (function_exists('rx_trace')) { rx_trace('KBDB_layouts_1_L602_BEFORE'); }
-$Swapino = getPaySettingValue("statusSwapWallet");
+$Swapino = $_rxKbPayValues['statusSwapWallet'] ?? null;
 if (function_exists('rx_trace')) { rx_trace('KBDB_layouts_1_L602_AFTER'); }
 if (function_exists('rx_trace')) { rx_trace('KBDB_layouts_1_L603_BEFORE'); }
-$trnadoo = getPaySettingValue("statustarnado");
+$trnadoo = $_rxKbPayValues['statustarnado'] ?? null;
 if (function_exists('rx_trace')) { rx_trace('KBDB_layouts_1_L603_AFTER'); }
 if (function_exists('rx_trace')) { rx_trace('KBDB_layouts_1_L604_BEFORE'); }
-$paymentverify = getPaySettingValue("checkpaycartfirst");
+$paymentverify = $_rxKbPayValues['checkpaycartfirst'] ?? null;
 if (function_exists('rx_trace')) { rx_trace('KBDB_layouts_1_L604_AFTER'); }
 $stmt = $pdo->prepare("SELECT * FROM Payment_report WHERE id_user = '$from_id' AND payment_Status = 'paid' ");
 if (function_exists('rx_trace')) { rx_trace('KBDB_layouts_1_L606_BEFORE'); }
@@ -640,26 +650,27 @@ $stmt->execute();
 if (function_exists('rx_trace')) { rx_trace('KBDB_layouts_1_L606_AFTER'); }
 $paymentexits = $stmt->rowCount();
 if (function_exists('rx_trace')) { rx_trace('KBDB_layouts_1_L608_BEFORE'); }
-$zarinpal = getPaySettingValue("zarinpalstatus");
+$zarinpal = $_rxKbPayValues['zarinpalstatus'] ?? null;
 if (function_exists('rx_trace')) { rx_trace('KBDB_layouts_1_L608_AFTER'); }
 if (function_exists('rx_trace')) { rx_trace('KBDB_layouts_1_L609_BEFORE'); }
-$zarinpey = getPaySettingValue("zarinpeystatus");
+$zarinpey = $_rxKbPayValues['zarinpeystatus'] ?? null;
 if (function_exists('rx_trace')) { rx_trace('KBDB_layouts_1_L609_AFTER'); }
 if (function_exists('rx_trace')) { rx_trace('KBDB_layouts_1_L610_BEFORE'); }
-$affilnecurrency = getPaySettingValue("digistatus");
+$affilnecurrency = $_rxKbPayValues['digistatus'] ?? null;
 if (function_exists('rx_trace')) { rx_trace('KBDB_layouts_1_L610_AFTER'); }
 if (function_exists('rx_trace')) { rx_trace('KBDB_layouts_1_L611_BEFORE'); }
-$arzireyali3 = getPaySettingValue("statusiranpay3");
+$arzireyali3 = $_rxKbPayValues['statusiranpay3'] ?? null;
 if (function_exists('rx_trace')) { rx_trace('KBDB_layouts_1_L611_AFTER'); }
 if (function_exists('rx_trace')) { rx_trace('KBDB_layouts_1_L612_BEFORE'); }
-$paymentstatussnotverify = getPaySettingValue("paymentstatussnotverify");
+$paymentstatussnotverify = $_rxKbPayValues['paymentstatussnotverify'] ?? null;
 if (function_exists('rx_trace')) { rx_trace('KBDB_layouts_1_L612_AFTER'); }
 if (function_exists('rx_trace')) { rx_trace('KBDB_layouts_1_L613_BEFORE'); }
-$paymentsstartelegram = getPaySettingValue("statusstar");
+$paymentsstartelegram = $_rxKbPayValues['statusstar'] ?? null;
 if (function_exists('rx_trace')) { rx_trace('KBDB_layouts_1_L613_AFTER'); }
 if (function_exists('rx_trace')) { rx_trace('KBDB_layouts_1_L614_BEFORE'); }
-$payment_status_nowpayment = getPaySettingValue("statusnowpayment");
+$payment_status_nowpayment = $_rxKbPayValues['statusnowpayment'] ?? null;
 if (function_exists('rx_trace')) { rx_trace('KBDB_layouts_1_L614_AFTER'); }
+unset($_rxKbPayRows, $_rxKbPayValues, $_rxKbPayRow);
 $step_payment = [
     'inline_keyboard' => []
     ];
