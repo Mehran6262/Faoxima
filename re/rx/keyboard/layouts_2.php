@@ -99,13 +99,17 @@ $backadmin = json_encode([
 ]);
 
 $stmt = $pdo->prepare("SHOW TABLES LIKE 'marzban_panel'");
+if (function_exists('rx_trace')) { rx_trace('KBDB_layouts_2_L102_BEFORE'); }
 $stmt->execute();
+if (function_exists('rx_trace')) { rx_trace('KBDB_layouts_2_L102_AFTER'); }
 $result = $stmt->fetchAll();
 $table_exists = count($result) > 0;
 $namepanel = [];
 if ($table_exists) {
     $stmt = $pdo->prepare("SELECT * FROM marzban_panel WHERE name_panel IS NOT NULL AND name_panel <> ''");
+    if (function_exists('rx_trace')) { rx_trace('KBDB_layouts_2_L108_BEFORE'); }
     $stmt->execute();
+    if (function_exists('rx_trace')) { rx_trace('KBDB_layouts_2_L108_AFTER'); }
     while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
         if (trim((string)$row['name_panel']) === '') continue; // skip corrupt/blank panel rows
         $namepanel[] = [$row['name_panel']];
@@ -126,7 +130,9 @@ if ($table_exists) {
     $json_list_marzban_panel = json_encode($list_marzban_panel);
 
     $stmt = $pdo->prepare("SELECT * FROM marzban_panel WHERE name_panel IS NOT NULL AND name_panel <> ''");
+    if (function_exists('rx_trace')) { rx_trace('KBDB_layouts_2_L129_BEFORE'); }
     $stmt->execute();
+    if (function_exists('rx_trace')) { rx_trace('KBDB_layouts_2_L129_AFTER'); }
     $list_marzban_panel_edit_product = ['inline_keyboard' => []];
     while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
         if (trim((string)$row['name_panel']) === '') continue; // skip corrupt/blank panel rows
@@ -138,13 +144,17 @@ if ($table_exists) {
 }
 
 $stmt = $pdo->prepare("SHOW TABLES LIKE 'channels'");
+if (function_exists('rx_trace')) { rx_trace('KBDB_layouts_2_L141_BEFORE'); }
 $stmt->execute();
+if (function_exists('rx_trace')) { rx_trace('KBDB_layouts_2_L141_AFTER'); }
 $result = $stmt->fetchAll();
 $table_exists = count($result) > 0;
 $list_channels = [];
 if ($table_exists) {
     $stmt = $pdo->prepare("SELECT * FROM channels");
+    if (function_exists('rx_trace')) { rx_trace('KBDB_layouts_2_L147_BEFORE'); }
     $stmt->execute();
+    if (function_exists('rx_trace')) { rx_trace('KBDB_layouts_2_L147_AFTER'); }
     while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
         $list_channels[] = [$row['link']];
     }
@@ -165,13 +175,17 @@ if ($table_exists) {
 }
 
 $stmt = $pdo->prepare("SHOW TABLES LIKE 'card_number'");
+if (function_exists('rx_trace')) { rx_trace('KBDB_layouts_2_L168_BEFORE'); }
 $stmt->execute();
+if (function_exists('rx_trace')) { rx_trace('KBDB_layouts_2_L168_AFTER'); }
 $result = $stmt->fetchAll();
 $table_exists = count($result) > 0;
 $list_card = [];
 if ($table_exists) {
     $stmt = $pdo->prepare("SELECT * FROM card_number");
+    if (function_exists('rx_trace')) { rx_trace('KBDB_layouts_2_L174_BEFORE'); }
     $stmt->execute();
+    if (function_exists('rx_trace')) { rx_trace('KBDB_layouts_2_L174_AFTER'); }
     while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
         $list_card[] = [$row['cardnumber']];
     }
@@ -192,15 +206,21 @@ if ($table_exists) {
 }
 
     $stmt = $pdo->prepare("SHOW TABLES LIKE 'help'");
+    if (function_exists('rx_trace')) { rx_trace('KBDB_layouts_2_L195_BEFORE'); }
     $stmt->execute();
+    if (function_exists('rx_trace')) { rx_trace('KBDB_layouts_2_L195_AFTER'); }
     $result = $stmt->fetchAll();
     $table_exists = count($result) > 0;
     if ($table_exists) {
     $stmt = $pdo->prepare("SELECT * FROM help");
+    if (function_exists('rx_trace')) { rx_trace('KBDB_layouts_2_L200_BEFORE'); }
     $stmt->execute();
+    if (function_exists('rx_trace')) { rx_trace('KBDB_layouts_2_L200_AFTER'); }
     $helpkey = [];
     $stmt = $pdo->prepare("SELECT * FROM help");
+    if (function_exists('rx_trace')) { rx_trace('KBDB_layouts_2_L203_BEFORE'); }
     $stmt->execute();
+    if (function_exists('rx_trace')) { rx_trace('KBDB_layouts_2_L203_AFTER'); }
     while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
             $helpkey[] = [$row['name_os']];
         }
@@ -220,7 +240,9 @@ if ($table_exists) {
 }
 
     $stmt = $pdo->prepare("SELECT * FROM help");
+    if (function_exists('rx_trace')) { rx_trace('KBDB_layouts_2_L223_BEFORE'); }
     $stmt->execute();
+    if (function_exists('rx_trace')) { rx_trace('KBDB_layouts_2_L223_AFTER'); }
     $helpcwtgory = ['inline_keyboard' => []];
     $datahelp = [];
     while ($result = $stmt->fetch(PDO::FETCH_ASSOC)) {
@@ -242,7 +264,9 @@ $json_list_helpـcategory = json_encode($helpcwtgory);
 
 
     $stmt = $pdo->prepare("SELECT * FROM app");
+    if (function_exists('rx_trace')) { rx_trace('KBDB_layouts_2_L245_BEFORE'); }
     $stmt->execute();
+    if (function_exists('rx_trace')) { rx_trace('KBDB_layouts_2_L245_AFTER'); }
     $helpapp = ['inline_keyboard' => []];
     while ($result = $stmt->fetch(PDO::FETCH_ASSOC)) {
             $helpapp['inline_keyboard'][] = [['text' => $result['name'], 'url' =>$result['link']]
@@ -254,7 +278,9 @@ $helpapp['inline_keyboard'][] = [
 $json_list_helpـlink = json_encode($helpapp);
 
     $stmt = $pdo->prepare("SELECT * FROM app");
+    if (function_exists('rx_trace')) { rx_trace('KBDB_layouts_2_L257_BEFORE'); }
     $stmt->execute();
+    if (function_exists('rx_trace')) { rx_trace('KBDB_layouts_2_L257_AFTER'); }
     $helpappremove = ['keyboard' => [],'resize_keyboard' => true];
     while ($result = $stmt->fetch(PDO::FETCH_ASSOC)) {
             $helpappremove['keyboard'][] = [
@@ -268,9 +294,13 @@ $json_list_remove_helpـlink = json_encode($helpappremove);
 
     $stmt = $pdo->prepare("SELECT * FROM marzban_panel WHERE status = 'active' AND (agent = :agent OR agent = 'all')");
     $stmt->bindParam(':agent', $users['agent']);
+    if (function_exists('rx_trace')) { rx_trace('KBDB_layouts_2_L271_BEFORE'); }
     $stmt->execute();
+    if (function_exists('rx_trace')) { rx_trace('KBDB_layouts_2_L271_AFTER'); }
     $list_marzban_panel_users = ['inline_keyboard' => []];
+    if (function_exists('rx_trace')) { rx_trace('KBDB_layouts_2_L273_BEFORE'); }
     $panelcount = select("marzban_panel","*","status","active","count");
+    if (function_exists('rx_trace')) { rx_trace('KBDB_layouts_2_L273_AFTER'); }
     if ($panelcount > 10) {
         $temp_row = [];
         while ($result = $stmt->fetch(PDO::FETCH_ASSOC)) {
@@ -279,7 +309,9 @@ $json_list_remove_helpـlink = json_encode($helpappremove);
             if ($result['type'] == "Manualsale") {
                 $manualStmt = $pdo->prepare("SELECT * FROM manualsell WHERE codepanel = :codepanel AND status = 'active'");
                 $manualStmt->bindParam(':codepanel', $result['code_panel']);
+                if (function_exists('rx_trace')) { rx_trace('KBDB_layouts_2_L282_BEFORE'); }
                 $manualStmt->execute();
+                if (function_exists('rx_trace')) { rx_trace('KBDB_layouts_2_L282_AFTER'); }
                 $configexits = $manualStmt->rowCount();
                 if (intval($configexits) == 0) continue;
             }
@@ -302,7 +334,9 @@ $json_list_remove_helpـlink = json_encode($helpappremove);
             if ($result['type'] == "Manualsale") {
                 $stmts = $pdo->prepare("SELECT * FROM manualsell WHERE codepanel = :codepanel AND status = 'active'");
                 $stmts->bindParam(':codepanel', $result['code_panel']);
+                if (function_exists('rx_trace')) { rx_trace('KBDB_layouts_2_L305_BEFORE'); }
                 $stmts->execute();
+                if (function_exists('rx_trace')) { rx_trace('KBDB_layouts_2_L305_AFTER'); }
                 $configexits = $stmts->rowCount();
                 if (intval($configexits) == 0) continue;
             }
@@ -336,7 +370,9 @@ $list_marzban_panel_user = json_encode($list_marzban_panel_users);
 
     $stmt = $pdo->prepare("SELECT * FROM marzban_panel WHERE status = 'active' AND (agent = :agent OR agent = 'all')");
     $stmt->bindParam(':agent', $users['agent']);
+    if (function_exists('rx_trace')) { rx_trace('KBDB_layouts_2_L339_BEFORE'); }
     $stmt->execute();
+    if (function_exists('rx_trace')) { rx_trace('KBDB_layouts_2_L339_AFTER'); }
     $list_marzban_panel_users_om = ['inline_keyboard' => []];
     while ($result = $stmt->fetch(PDO::FETCH_ASSOC)) {
         if($result['hide_user'] != null and in_array($from_id,json_decode($result['hide_user'],true)))continue;
@@ -351,9 +387,13 @@ $list_marzban_panel_userom = json_encode($list_marzban_panel_users_om);
 
 
     $stmt = $pdo->prepare("SELECT * FROM marzban_panel WHERE status = 'active' AND (agent = :ag OR agent = 'all') AND name_panel != :exclude");
+    if (function_exists('rx_trace')) { rx_trace('KBDB_layouts_2_L354_BEFORE'); }
     $stmt->execute([':ag' => (string)($users['agent'] ?? ''), ':exclude' => (string)($users['Processing_value_four'] ?? '')]);
+    if (function_exists('rx_trace')) { rx_trace('KBDB_layouts_2_L354_AFTER'); }
     $list_marzban_panel_users_change = ['inline_keyboard' => []];
+    if (function_exists('rx_trace')) { rx_trace('KBDB_layouts_2_L356_BEFORE'); }
     $panelcount = select("marzban_panel","*","status","active","count");
+    if (function_exists('rx_trace')) { rx_trace('KBDB_layouts_2_L356_AFTER'); }
     if($panelcount > 10){
         $temp_row = [];
         while ($result = $stmt->fetch(PDO::FETCH_ASSOC)) {
@@ -384,7 +424,9 @@ $list_marzban_panel_userschange = json_encode($list_marzban_panel_users_change);
 
 
     $stmt = $pdo->prepare("SELECT * FROM marzban_panel WHERE TestAccount = 'ONTestAccount' AND (agent = :ag OR agent = 'all')");
+    if (function_exists('rx_trace')) { rx_trace('KBDB_layouts_2_L387_BEFORE'); }
     $stmt->execute([':ag' => (string)($users['agent'] ?? '')]);
+    if (function_exists('rx_trace')) { rx_trace('KBDB_layouts_2_L387_AFTER'); }
     $list_marzban_panel_usertest = ['inline_keyboard' => []];
     while ($result = $stmt->fetch(PDO::FETCH_ASSOC)) {
         if($result['hide_user'] != null and in_array($from_id,json_decode($result['hide_user'],true)))continue;
@@ -425,11 +467,15 @@ $textbot = json_encode([
 ]);
 
 $stmt = $pdo->prepare("SHOW TABLES LIKE 'protocol'");
+if (function_exists('rx_trace')) { rx_trace('KBDB_layouts_2_L428_BEFORE'); }
 $stmt->execute();
+if (function_exists('rx_trace')) { rx_trace('KBDB_layouts_2_L428_AFTER'); }
 $result = $stmt->fetchAll();
 $table_exists = count($result) > 0;
 if ($table_exists) {
+    if (function_exists('rx_trace')) { rx_trace('KBDB_layouts_2_L432_BEFORE'); }
     $getdataprotocol = select("protocol","*",null,null,"fetchAll");
+    if (function_exists('rx_trace')) { rx_trace('KBDB_layouts_2_L432_AFTER'); }
     $protocol = [];
     foreach($getdataprotocol as $result)
     {
@@ -440,14 +486,18 @@ if ($table_exists) {
  }
 
 $stmt = $pdo->prepare("SHOW TABLES LIKE 'product'");
+if (function_exists('rx_trace')) { rx_trace('KBDB_layouts_2_L443_BEFORE'); }
 $stmt->execute();
+if (function_exists('rx_trace')) { rx_trace('KBDB_layouts_2_L443_AFTER'); }
 $result = $stmt->fetchAll();
 $table_exists = count($result) > 0;
 if ($table_exists) {
     $product = [];
     $stmt = $pdo->prepare("SELECT * FROM product WHERE Location = :text or Location = '/all' ");
     $stmt->bindParam(':text', $text  , PDO::PARAM_STR);
+    if (function_exists('rx_trace')) { rx_trace('KBDB_layouts_2_L450_BEFORE'); }
     $stmt->execute();
+    if (function_exists('rx_trace')) { rx_trace('KBDB_layouts_2_L450_AFTER'); }
     while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
         $product[] = [$row['name_product']];
     }
@@ -469,13 +519,17 @@ if ($table_exists) {
 }
 
 $stmt = $pdo->prepare("SHOW TABLES LIKE 'Discount'");
+if (function_exists('rx_trace')) { rx_trace('KBDB_layouts_2_L472_BEFORE'); }
 $stmt->execute();
+if (function_exists('rx_trace')) { rx_trace('KBDB_layouts_2_L472_AFTER'); }
 $result = $stmt->fetchAll();
 $table_exists = count($result) > 0;
 if ($table_exists) {
     $Discount = [];
     $stmt = $pdo->prepare("SELECT * FROM Discount");
+    if (function_exists('rx_trace')) { rx_trace('KBDB_layouts_2_L478_BEFORE'); }
     $stmt->execute();
+    if (function_exists('rx_trace')) { rx_trace('KBDB_layouts_2_L478_AFTER'); }
     while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
         $Discount[] = [$row['code']];
     }
@@ -499,7 +553,9 @@ if ($table_exists) {
 }
 
 $stmt = $pdo->prepare("SHOW TABLES LIKE 'Inbound'");
+if (function_exists('rx_trace')) { rx_trace('KBDB_layouts_2_L502_BEFORE'); }
 $stmt->execute();
+if (function_exists('rx_trace')) { rx_trace('KBDB_layouts_2_L502_AFTER'); }
 $result = $stmt->fetchAll();
 $table_exists = count($result) > 0;
 if ($table_exists) {
@@ -507,7 +563,9 @@ if ($table_exists) {
     $stmt = $pdo->prepare("SELECT * FROM Inbound WHERE location = :Processing_value AND protocol = :text");
     $stmt->bindParam(':text', $text  , PDO::PARAM_STR);
     $stmt->bindParam(':Processing_value', $users['Processing_value']  , PDO::PARAM_STR);
+    if (function_exists('rx_trace')) { rx_trace('KBDB_layouts_2_L510_BEFORE'); }
     $stmt->execute();
+    if (function_exists('rx_trace')) { rx_trace('KBDB_layouts_2_L510_AFTER'); }
 if ($stmt->fetch(PDO::FETCH_ASSOC)) {
     while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
     $Inboundkeyboard[] = [$row['NameInbound']];
@@ -530,13 +588,17 @@ if ($stmt->fetch(PDO::FETCH_ASSOC)) {
 }
 
 $stmt = $pdo->prepare("SHOW TABLES LIKE 'DiscountSell'");
+if (function_exists('rx_trace')) { rx_trace('KBDB_layouts_2_L533_BEFORE'); }
 $stmt->execute();
+if (function_exists('rx_trace')) { rx_trace('KBDB_layouts_2_L533_AFTER'); }
 $result = $stmt->fetchAll();
 $table_exists = count($result) > 0;
 if ($table_exists) {
     $DiscountSell = [];
     $stmt = $pdo->prepare("SELECT * FROM DiscountSell");
+    if (function_exists('rx_trace')) { rx_trace('KBDB_layouts_2_L539_BEFORE'); }
     $stmt->execute();
+    if (function_exists('rx_trace')) { rx_trace('KBDB_layouts_2_L539_AFTER'); }
     while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
         $DiscountSell[] = [$row['codeDiscount']];
     }
@@ -632,7 +694,9 @@ $MethodUsername = json_encode([
 
 $rxAdminPanelStylesAll = [];
 if (function_exists('select')) {
+    if (function_exists('rx_trace')) { rx_trace('KBDB_layouts_2_L635_BEFORE'); }
     $__rxRow = select('setting', 'keyboard_styles_all', null, null, 'select');
+    if (function_exists('rx_trace')) { rx_trace('KBDB_layouts_2_L635_AFTER'); }
     if (is_array($__rxRow) && !empty($__rxRow['keyboard_styles_all'])) {
         $__rxDecoded = json_decode($__rxRow['keyboard_styles_all'], true);
         if (is_array($__rxDecoded)) { $rxAdminPanelStylesAll = $__rxDecoded; }
