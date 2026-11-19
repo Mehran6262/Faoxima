@@ -303,6 +303,15 @@ function adduser($location,$data_limit,$username_ac,$timestamp,$note ='',$data_l
             "note" => $note,
             "data_limit_reset_strategy" => $data_limit_reset
         );
+                $vpnOnlyUrl = rtrim(trim((string) getenv('VPN_ONLY_TEST_PANEL_URL')), '/');
+        $currentUrl = rtrim(trim((string) $marzban_list_get['url_panel']), '/');
+
+        if ($name_product === 'usertest'
+            && $vpnOnlyUrl !== ''
+            && $currentUrl === $vpnOnlyUrl
+            && is_object($data['proxy_settings'])) {
+            unset($data['proxy_settings']->mtproto);
+        }
         if(isset($inbounds)){
             $data['group_ids'] = $inbounds;
         }
