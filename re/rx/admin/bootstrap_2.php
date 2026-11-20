@@ -6203,7 +6203,7 @@ $text_expie_agent
     '▫️سرور مستقیم | گیگی 3 تومن',
     '▫️تک لوکیشن | گیگی 2 تومن',
     '🔹 تانل | گیگی 6 تومن',
-    '🔸 تانل | گیگی 4 تومن,
+    '🔸 تانل | گیگی 4 تومن',
 ], true)) {
     $url = rtrim($marzban_list_get['url_panel'], '/') . '/api/admin';
     $ch = curl_init($url);
