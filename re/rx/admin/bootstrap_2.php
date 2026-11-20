@@ -6199,6 +6199,12 @@ $text_expie_agent
             $mem_total = formatBytes($System_Stats['mem_total']);
             $mem_used = formatBytes($System_Stats['mem_used']);
             $bandwidth = formatBytes($System_Stats['outgoing_bandwidth'] + $System_Stats['incoming_bandwidth']);
+               if ($text === 'mehran-mostaghim' && is_array($System_Stats)) {
+       $fields = array_filter(array_keys($System_Stats), static function ($key) {
+           return preg_match('/quota|limit|usage|traffic|bandwidth|remaining|balance|consum|transfer/i', (string) $key);
+       });
+       $bandwidth .= "\n🔎 فیلدهای آماری: " . ($fields ? implode(', ', $fields) : 'موردی پیدا نشد');
+               }
             $rx_listsell_count = mysqli_fetch_assoc(mysqli_query($connect, "SELECT COUNT(*) FROM invoice WHERE (status = 'active' OR status = 'end_of_time'  OR status = 'end_of_volume' OR status = 'sendedwarn' OR Status = 'send_on_hold') AND Service_location = '{$marzban_list_get['name_panel']}' AND name_product != 'سرویس تست'"));
             $ListSell = number_format((int)($rx_listsell_count['COUNT(*)'] ?? 0));
             $rx_listsell_sum = mysqli_fetch_assoc(mysqli_query($connect, "SELECT SUM(price_product) FROM invoice WHERE (status = 'active' OR status = 'end_of_time'  OR status = 'end_of_volume' OR status = 'sendedwarn' OR Status = 'send_on_hold') AND Service_location = '{$marzban_list_get['name_panel']}' AND name_product != 'سرویس تست'"));
