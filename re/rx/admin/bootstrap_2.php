@@ -6219,13 +6219,17 @@ $text_expie_agent
     curl_close($ch);
 
     $account = is_string($body) ? json_decode($body, true) : null;
-    $bandwidth .= "\n🔎 بررسی سهمیه نمایندگی: HTTP " . $http;
-    if ($http === 200 && is_array($account)) {
-        $fields = preg_grep(
-            '/quota|limit|usage|used|traffic|bandwidth|remaining|balance|consum|transfer|bytes/i',
-            array_keys($account)
-        );
-        $bandwidth .= ' | ' . ($fields ? implode(', ', $fields) : 'فیلد حجمی در سطح اول پیدا نشد');
+        $limit = $account['data_limit'] ?? null;
+    $used  = $account['used_traffic'] ?? null;
+
+    if ($http === 200 && is_numeric($limit) && $limit > 0
+        && is_numeric($used) && $used >= 0) {
+        $remaining = max(0, $limit - $used);
+        $bandwidth .= "\n📊 مصرف بسته نمایندگی: "
+            . formatBytes($used) . ' از ' . formatBytes($limit);
+        $bandwidth .= "\n📦 حجم باقی‌مانده بسته: " . formatBytes($remaining);
+    } else {
+        $bandwidth .= "\n📦 حجم باقی‌مانده بسته: نامشخص";
     }
 }
             $rx_listsell_count = mysqli_fetch_assoc(mysqli_query($connect, "SELECT COUNT(*) FROM invoice WHERE (status = 'active' OR status = 'end_of_time'  OR status = 'end_of_volume' OR status = 'sendedwarn' OR Status = 'send_on_hold') AND Service_location = '{$marzban_list_get['name_panel']}' AND name_product != 'سرویس تست'"));
