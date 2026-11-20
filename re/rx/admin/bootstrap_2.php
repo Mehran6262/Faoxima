@@ -6199,7 +6199,7 @@ $text_expie_agent
             $mem_total = formatBytes($System_Stats['mem_total']);
             $mem_used = formatBytes($System_Stats['mem_used']);
             $bandwidth = formatBytes($System_Stats['outgoing_bandwidth'] + $System_Stats['incoming_bandwidth']);
-               if ($text === 'mehran-mostaghim' && is_array($System_Stats)) {
+               if ($text === '▫️سرور مستقیم | گیگی 3 تومن' && is_array($System_Stats)) {
        $fields = array_filter(array_keys($System_Stats), static function ($key) {
            return preg_match('/quota|limit|usage|traffic|bandwidth|remaining|balance|consum|transfer/i', (string) $key);
        });
