@@ -6199,12 +6199,35 @@ $text_expie_agent
             $mem_total = formatBytes($System_Stats['mem_total']);
             $mem_used = formatBytes($System_Stats['mem_used']);
             $bandwidth = formatBytes($System_Stats['outgoing_bandwidth'] + $System_Stats['incoming_bandwidth']);
-               if ($text === '▫️سرور مستقیم | گیگی 3 تومن' && is_array($System_Stats)) {
-       $fields = array_filter(array_keys($System_Stats), static function ($key) {
-           return preg_match('/quota|limit|usage|traffic|bandwidth|remaining|balance|consum|transfer/i', (string) $key);
-       });
-       $bandwidth .= "\n🔎 فیلدهای آماری: " . ($fields ? implode(', ', $fields) : 'موردی پیدا نشد');
-               }
+               if ($text === '▫️سرور مستقیم | گیگی 3 تومن') {
+    $url = rtrim($marzban_list_get['url_panel'], '/') . '/api/admin';
+    $ch = curl_init($url);
+    if (function_exists('faoxima_apply_curl_proxy')) {
+        faoxima_apply_curl_proxy($ch, 'panel');
+    }
+    curl_setopt_array($ch, [
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_CONNECTTIMEOUT => 2,
+        CURLOPT_TIMEOUT => 4,
+        CURLOPT_HTTPHEADER => [
+            'Accept: application/json',
+            'Authorization: Bearer ' . $Check_token['access_token'],
+        ],
+    ]);
+    $body = curl_exec($ch);
+    $http = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    curl_close($ch);
+
+    $account = is_string($body) ? json_decode($body, true) : null;
+    $bandwidth .= "\n🔎 بررسی سهمیه نمایندگی: HTTP " . $http;
+    if ($http === 200 && is_array($account)) {
+        $fields = preg_grep(
+            '/quota|limit|usage|used|traffic|bandwidth|remaining|balance|consum|transfer|bytes/i',
+            array_keys($account)
+        );
+        $bandwidth .= ' | ' . ($fields ? implode(', ', $fields) : 'فیلد حجمی در سطح اول پیدا نشد');
+    }
+}
             $rx_listsell_count = mysqli_fetch_assoc(mysqli_query($connect, "SELECT COUNT(*) FROM invoice WHERE (status = 'active' OR status = 'end_of_time'  OR status = 'end_of_volume' OR status = 'sendedwarn' OR Status = 'send_on_hold') AND Service_location = '{$marzban_list_get['name_panel']}' AND name_product != 'سرویس تست'"));
             $ListSell = number_format((int)($rx_listsell_count['COUNT(*)'] ?? 0));
             $rx_listsell_sum = mysqli_fetch_assoc(mysqli_query($connect, "SELECT SUM(price_product) FROM invoice WHERE (status = 'active' OR status = 'end_of_time'  OR status = 'end_of_volume' OR status = 'sendedwarn' OR Status = 'send_on_hold') AND Service_location = '{$marzban_list_get['name_panel']}' AND name_product != 'سرویس تست'"));
