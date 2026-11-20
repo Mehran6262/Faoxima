@@ -6199,7 +6199,12 @@ $text_expie_agent
             $mem_total = formatBytes($System_Stats['mem_total']);
             $mem_used = formatBytes($System_Stats['mem_used']);
             $bandwidth = formatBytes($System_Stats['outgoing_bandwidth'] + $System_Stats['incoming_bandwidth']);
-               if ($text === '▫️سرور مستقیم | گیگی 3 تومن') {
+            if (in_array($text, [
+    '▫️سرور مستقیم | گیگی 3 تومن',
+    '▫️تک لوکیشن | گیگی 2 تومن',
+    '🔹 تانل | گیگی 6 تومن',
+    '🔸 تانل | گیگی 4 تومن,
+], true)) {
     $url = rtrim($marzban_list_get['url_panel'], '/') . '/api/admin';
     $ch = curl_init($url);
     if (function_exists('faoxima_apply_curl_proxy')) {
