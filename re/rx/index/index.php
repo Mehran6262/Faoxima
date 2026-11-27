@@ -116,6 +116,10 @@ if (!function_exists('rx_trace')) {
 rx_trace('BEFORE_EVAL_INPUT');
 // === END performance tracing ===
 
+if (!defined('FAOXIMA_SKIP_BOTAPI_ROUTER')) {
+    define('FAOXIMA_SKIP_BOTAPI_ROUTER', true);
+}
+    
     eval($__rx_code);
 
     file_put_contents(__DIR__ . '/eval_trace.log', date('c') . " | H: after eval\n", FILE_APPEND);
