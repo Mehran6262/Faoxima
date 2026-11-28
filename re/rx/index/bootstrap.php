@@ -20,6 +20,15 @@ if (empty($from_id)) {
     $text       = $msg['text'] ?? ($cb['data'] ?? '');
     $chat_id    = $msg['chat']['id'] ?? ($cb['message']['chat']['id'] ?? 0);
     $message    = $msg;
+    $photo = $message['photo'] ?? [];
+$photoid = '';
+
+if (is_array($photo) && !empty($photo)) {
+    $last_photo = end($photo);
+    $photoid = $last_photo['file_id'] ?? '';
+}
+
+$caption = $message['caption'] ?? '';
     $first_name = $msg['from']['first_name'] ?? ($cb['from']['first_name'] ?? '');
     $username   = $msg['from']['username'] ?? ($cb['from']['username'] ?? '');
 }
