@@ -23,6 +23,7 @@ if (empty($from_id)) {
     $first_name = $msg['from']['first_name'] ?? ($cb['from']['first_name'] ?? '');
     $username   = $msg['from']['username'] ?? ($cb['from']['username'] ?? '');
 }
+
 $photo = $message['photo'] ?? [];
 $photoid = '';
 
