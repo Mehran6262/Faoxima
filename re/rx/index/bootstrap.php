@@ -24,6 +24,7 @@ if (empty($from_id)) {
     $username   = $msg['from']['username'] ?? ($cb['from']['username'] ?? '');
 }
 
+$message = $update['message'] ?? ($message ?? []);
 $photo = $message['photo'] ?? [];
 $photoid = '';
 
